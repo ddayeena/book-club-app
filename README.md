@@ -1,16 +1,35 @@
-# React + Vite
+# Книжкові клуби
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Веб-застосунок для організації роботи книжкових клубів.
+Поточний результат: початкова сторінка з каталогом клубів (локальні дані).
 
-Currently, two official plugins are available:
+## Середовище
+Node.js: v24.21.0
+npm: 11.19.0
+Git: 2.45.1.windows.1
+Docker: 27.2.0
+Docker Compose: v2.29.2-desktop.2
+Основний варіант: A (Windows зі стандартними інсталяторами)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Запуск
+Нативно:
+  npm install
+  npm run dev
+  → http://localhost:5173
 
-## React Compiler
+Docker:
+  docker compose build
+  docker compose run --rm web npm install
+  docker compose up
+  → http://localhost:5173
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Зупинення й видалення контейнера: docker compose down
 
-## Expanding the ESLint configuration
+## Збірка
+npm run build
+Або: docker compose run --rm web npm run build
+Перегляд збірки: npm run preview → http://localhost:4173
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## План
+Див. docs/project-plan.md
+Форми, голосування, зустрічі, маршрутизація — заплановано на наступні лабораторні.
