@@ -7,11 +7,13 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; }
+
 main, .site-header, footer {
   max-width: 64rem;
   margin-inline: auto;
   padding: 1rem;
 }
+
 .site-header, nav {
   display: flex;
   flex-wrap: wrap;
@@ -19,10 +21,12 @@ main, .site-header, footer {
   align-items: center;
   justify-content: space-between;
 }
+
 a { color: #b594e6; }
 a:focus-visible { outline: 3px solid #b594e6; outline-offset: 4px; }
 section { margin-block: 1.5rem; }
 
+/* Картки клубів */
 .club-grid {
   list-style: none;
   padding: 0;
@@ -30,6 +34,7 @@ section { margin-block: 1.5rem; }
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
   gap: 1rem;
 }
+
 .club-card {
   height: 100%;
   padding: 1rem;
@@ -42,3 +47,90 @@ section { margin-block: 1.5rem; }
 .status { font-weight: 600; color: #f4a261; } 
 .status.active { color: #2dd4bf; } 
 .members { font-size: 0.9rem; color: #998f9e; }
+
+/* Навігація */
+.site-header nav { display: block; }
+.nav-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.skip-link {
+  display: inline-block;
+  margin: 0.5rem 1rem;
+}
+
+/* Форми та поля вводу */
+.form-field {
+  display: grid;
+  gap: 0.375rem;
+  margin-block: 1rem;
+  max-width: 36rem;
+}
+
+.form-field label { font-weight: 600; }
+
+.form-field input, .form-field textarea {
+  width: 100%;
+  padding: 0.625rem;
+  border-radius: 0.375rem;
+  border: 1px solid #3a3145;
+  background: #26202e;
+  color: #e3dfe8;
+  font: inherit;
+}
+
+.form-field textarea { resize: vertical; }
+
+.form-field input[readOnly] {
+  background: #19151e;
+  color: #998f9e;
+  cursor: not-allowed;
+}
+
+.field-hint { 
+  margin: 0; 
+  color: #998f9e; 
+  font-size: 0.9rem;
+}
+
+/* Кнопки */
+.form-actions { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 0.75rem; 
+}
+
+.app-button {
+  padding: 0.625rem 1rem;
+  border-radius: 0.375rem;
+  border: 1px solid transparent;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.app-button-primary {
+  background: #b594e6;
+  color: #19151e;
+}
+
+.app-button-secondary {
+  background: transparent;
+  color: #b594e6;
+  border-color: #3a3145;
+}
+
+.app-button:disabled { 
+  opacity: 0.5; 
+  cursor: not-allowed; 
+}
+
+button:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}

@@ -1,29 +1,20 @@
-import ClubCard from '../components/ClubCard.jsx'
 import { clubs } from '../data/clubs.js'
+import Section from '../components/ui/Section.jsx'
+import CatalogSummary from '../components/clubs/CatalogSummary.jsx'
+import ClubList from '../components/clubs/ClubList.jsx'
 
 export default function HomePage() {
   return (
     <>
-      <section id="about" aria-labelledby="about-title">
-        <h1 id="about-title">Книжкові клуби</h1>
+      <Section id="about" title="Про застосунок">
         <p>Платформа для організації спільного читання й обговорень.</p>
-      </section>
+        <p>Перегляньте каталог книжкових клубів і оберіть той, що відповідає вашим інтересам.</p>
+      </Section>
 
-      <section id="catalog" aria-labelledby="catalog-title">
-        <h2 id="catalog-title">Клуби</h2>
-        <p>Клубів у каталозі: {clubs.length}</p>
-        {clubs.length === 0 ? (
-          <p>Клубів ще не додано.</p>
-        ) : (
-          <ul className="club-grid">
-            {clubs.map((club) => (
-              <li key={club.id}>
-                <ClubCard club={club} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <Section id="catalog" title="Клуби">
+        <CatalogSummary total={clubs.length} />
+        <ClubList clubs={clubs} />
+      </Section>
     </>
   )
 }
