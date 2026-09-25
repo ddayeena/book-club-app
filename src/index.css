@@ -134,3 +134,17 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
   outline: 3px solid currentColor;
   outline-offset: 3px;
 }
+
+.catalog-filters { margin-block: 1rem; }
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block: 1rem;
+}
+.checkbox-field input { width: auto; }
+.selection-note { font-weight: 600; }
+button[aria-pressed="true"] {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
