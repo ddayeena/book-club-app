@@ -94,3 +94,35 @@ AppLayout. SiteHeader, MainNav і підвал залишаються поза �
 - onMotivationChange(text), onWantsRemindersChange(flag) — JoinForm → JoinPage
 - onReset() — скидання фільтрів (HomePage) або чернетки (JoinPage), окремі дії
 - onClearSelection() — JoinPage → JoinContainer → провайдер (clearSelection)
+
+
+## Маршрутизація (Л 2.2)
+
+### Дерево маршрутного вмісту
+
+AppLayout (ClubSelectionProvider, Outlet)
+  HomePage
+  CatalogContainer → ClubsListPage        (/clubs)
+  ClubDetailsPage                         (/clubs/:clubId)
+  RequestsLayout (Outlet)                 (/requests)
+    RequestsPage                          (index)
+    RequestCreatePage → JoinPage          (/requests/new?clubId=...)
+    RequestEditPage → JoinPage            (/requests/:requestId/edit)
+  NotFoundPage                            (*)
+
+### Джерела стану після додавання маршрутизації
+
+| Значення                       | Де зберігається               | Після перезавантаження  |
+|--------------------------------|-------------------------------|-------------------------|
+| Відкрита сторінка й id         | Шлях URL                      | Відновлюється           |
+| Пошук і фільтр "читають"       | Query parameters (q, reading) | Відновлюється           |
+| Клуб нової заявки              | Query parameter clubId        | Визначається з адреси   |
+| Останній явний вибір клубу     | ClubSelectionProvider         | Скидається              |
+| Введення у формі (draft)       | Локальний стан JoinPage       | Скидається              |
+
+### Рішення
+1. ClubSelectionProvider перенесено в AppLayout: він лишається змонтованим при переходах між дочірніми сторінками, тому останній вибір не губиться.
+2. Фільтри каталогу читаються з URL (useSearchParams), дубльованих useState немає; контракт useClubFilters збережено.
+3. JoinPage став спільним редактором, а перевірку клубу виконують RequestCreatePage і RequestEditPage; key за ідентичністю запису не змішує чернетки.
+4. JoinContainer прибрано: його роль виконують маршрутні сторінки.
+5. Чернетка живе, доки відкрита сторінка редактора; після виходу, зміни клубу чи запису або перезавантаження скидається.
