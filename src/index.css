@@ -1,7 +1,7 @@
 :root {
   font-family: system-ui, -apple-system, sans-serif;
-  color: #2b2725;           
-  background: #f8f6f2;      
+  color: #2c2a29;           /* Темний графітово-коричневий (дуже холодний) */
+  background: #f5f4f1;      /* Колір світлого матового паперу (без жовтизни) */
   line-height: 1.6;
 }
 
@@ -15,37 +15,42 @@ main, .site-header, footer {
 }
 
 .site-header {
-  border-bottom: 1px solid #e8e2d8;
-  background: #f8f6f2;
-  box-shadow: 0 1px 2px 0 rgba(45, 35, 25, 0.05); 
+  /* Подвійна лінія замість звичайної — виглядає дуже по-книжковому */
+  border-bottom: 3px double #d6d2c9; 
+  background: #f5f4f1;
+  padding-bottom: 1.25rem;
 }
 
 .site-header, nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.5rem;
   align-items: center;
   justify-content: space-between;
 }
 
 a { 
-  color: #8f4632;           
-  text-decoration: none;
-  transition: color 0.2s ease;
+  color: #5c4f45;           /* Колір холодного еспресо */
+  text-decoration: underline;
+  text-underline-offset: 4px; /* Лінія трохи відсунута від тексту */
+  text-decoration-thickness: 1px;
+  transition: all 0.2s ease;
 }
 
 a:hover {
-  color: #763725;           
+  color: #3b322b;           /* Темніший відтінок при наведенні */
+  text-decoration-thickness: 2px; /* Лінія стає жирнішою */
 }
 
 a:focus-visible { 
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(143, 70, 50, 0.25); 
-  border-radius: 4px;
+  outline: 2px solid #5c4f45;
+  outline-offset: 4px;
+  border-radius: 2px;
 }
 
-section { margin-block: 2rem; }
+section { margin-block: 2.5rem; }
 
+/* Картки клубів — строгий журнальний стиль */
 .club-grid {
   list-style: none;
   padding: 0;
@@ -57,39 +62,43 @@ section { margin-block: 2rem; }
 .club-card {
   height: 100%;
   padding: 1.5rem;
-  border: 1px solid #e8e2d8;
-  border-radius: 12px;      
-  background: #ffffff;     
-  box-shadow: 0 4px 6px -1px rgba(45, 35, 25, 0.05), 0 2px 4px -1px rgba(45, 35, 25, 0.03);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  border: 1px solid #d6d2c9;
+  border-radius: 4px;       /* Дуже легке, строге заокруглення */
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: all 0.25s ease;
 }
 
 .club-card:hover {
-  transform: translateY(-4px); 
-  box-shadow: 0 10px 15px -3px rgba(45, 35, 25, 0.08), 0 4px 6px -2px rgba(45, 35, 25, 0.04);
-  border-color: #d6ccbe;
+  border-color: #5c4f45;    /* Картка обводиться темним кольором */
+  /* Холодна кавова тінь */
+  box-shadow: 0 8px 16px -4px rgba(92, 79, 69, 0.12);
+  transform: translateY(-2px);
 }
 
 .genre { 
-  color: #8c827a; 
-  font-weight: 500;
-  font-size: 0.875rem;
+  color: #7a736d; 
+  font-weight: 600;
+  font-size: 0.75rem;
   text-transform: uppercase; 
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;    /* Широкий інтервал (editorial style) */
+  margin-bottom: 0.5rem;
+  display: block;
 } 
 
 .status { 
   font-weight: 600; 
-  color: #b45309;           
+  color: #a36b28;           /* Антична бронза (замість яскравого оранжевого) */
 } 
 
 .status.active { 
-  color: #15803d;           
+  color: #2f6655;           /* Сланцевий зелений (дуже спокійний, холодний) */
 } 
 
 .members { 
   font-size: 0.9rem; 
-  color: #8c827a; 
+  color: #7a736d; 
+  margin-top: 0.5rem;
 }
 
 /* Навігація */
@@ -106,6 +115,7 @@ section { margin-block: 2rem; }
 .skip-link {
   display: inline-block;
   margin: 0.5rem 1rem;
+  text-decoration: none;
 }
 
 /* Форми та поля вводу */
@@ -117,126 +127,124 @@ section { margin-block: 2rem; }
 }
 
 .form-field label { 
-  font-weight: 500; 
-  color: #2b2725;
+  font-weight: 600; 
+  color: #2c2a29;
 }
 
 .form-field input, .form-field textarea {
   width: 100%;
-  padding: 0.625rem 0.875rem;
-  border-radius: 8px;
-  border: 1px solid #dcd5c9;
+  padding: 0.75rem;
+  border-radius: 4px;       /* Строгі кути для інпутів */
+  border: 1px solid #d6d2c9;
   background: #ffffff;
-  color: #2b2725;
+  color: #2c2a29;
   font: inherit;
   transition: all 0.2s ease;
 }
 
 .form-field input:focus, .form-field textarea:focus {
   outline: none;
-  border-color: #8f4632;
-  box-shadow: 0 0 0 3px rgba(143, 70, 50, 0.2);
+  border-color: #5c4f45;
+  box-shadow: 0 0 0 3px rgba(92, 79, 69, 0.15);
 }
 
-.form-field textarea { resize: vertical; }
+.form-field textarea { resize: vertical; min-height: 100px; }
 
 .form-field input[readOnly] {
-  background: #f0ece5;
-  color: #8c827a;
+  background: #ebe9e4;
+  color: #7a736d;
   cursor: not-allowed;
+  border-color: transparent;
 }
 
 .field-hint { 
   margin: 0; 
-  color: #8c827a; 
-  font-size: 0.875rem;
+  color: #7a736d; 
+  font-size: 0.85rem;
 }
 
-/* Кнопки */
+/* Кнопки — класичні та акуратні */
 .form-actions { 
   display: flex; 
   flex-wrap: wrap; 
   gap: 1rem; 
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
 }
 
 .app-button {
-  padding: 0.625rem 1.25rem;
-  border-radius: 8px;
+  padding: 0.625rem 1.5rem;
+  border-radius: 4px;
   border: 1px solid transparent;
   font: inherit;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .app-button-primary {
-  background: #8f4632;
+  background: #5c4f45;      /* Колір холодного еспресо */
   color: #ffffff;
-  box-shadow: 0 1px 2px rgba(45, 35, 25, 0.1);
 }
 
 .app-button-primary:hover:not(:disabled) {
-  background: #763725;
-  transform: translateY(-1px);
+  background: #453a33;      /* Ще темніший при наведенні */
 }
 
 .app-button-secondary {
-  background: #ffffff;
-  color: #2b2725;
-  border-color: #dcd5c9;
-  box-shadow: 0 1px 2px rgba(45, 35, 25, 0.05);
+  background: transparent;
+  color: #5c4f45;
+  border-color: #d6d2c9;
 }
 
 .app-button-secondary:hover:not(:disabled) {
-  background: #f0ece5;
+  background: #ebe9e4;
+  border-color: #b5b0a6;
 }
 
 .app-button:disabled { 
-  opacity: 0.6; 
+  opacity: 0.5; 
   cursor: not-allowed; 
-  transform: none;
 }
 
 /* Фільтри */
 .catalog-filters { 
   margin-block: 1.5rem;
-  padding: 1.25rem;
+  padding: 1.5rem;
   background: #ffffff;
-  border: 1px solid #e8e2d8;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(45, 35, 25, 0.04);
+  border: 1px solid #d6d2c9;
+  border-radius: 4px;
 }
 
 .checkbox-field {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: 0.75rem;
   margin-block: 0.75rem;
 }
 
 .checkbox-field input { 
-  width: 1.1rem;
-  height: 1.1rem;
-  accent-color: #8f4632;
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: #5c4f45;
   cursor: pointer;
 }
 
 .selection-note { 
-  font-weight: 500; 
-  color: #8f4632;
+  font-weight: 600; 
+  color: #5c4f45;
 }
 
 button[aria-pressed="true"] {
-  border-color: #8f4632;
-  background: #f0ece5;      
-  color: #763725;
+  border-color: #5c4f45;
+  background: #ebe9e4;      
+  color: #2c2a29;
 }
 
 footer {
-  border-top: 1px solid #e8e2d8;
-  color: #8c827a;
+  border-top: 1px solid #d6d2c9;
+  color: #7a736d;
   font-size: 0.9rem;
   text-align: center;
-  margin-top: 2rem;
-}
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+}   
