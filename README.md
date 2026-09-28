@@ -30,10 +30,16 @@ npm run build
 Або: docker compose run --rm web npm run build
 Перегляд збірки: npm run preview → http://localhost:4173
 
-## Стан
-Реалізовано перегляд каталогу клубів і макет заявки на приєднання до
-клубу (без збереження даних). 
-Компонентна архітектура: див. docs/component-architecture.md.
+## Маршрутизація (Л 2.2)
+React Router: <версія з npm list react-router>, декларативний режим.
+Адреси для перевірки:
+- /clubs?q=клуб&reading=1
+- /clubs/club-001
+- /requests/new?clubId=club-001
+- /requests/req-001/edit
+Обмеження: чернетки заявок не зберігаються (скидаються при виході зі сторінки
+чи перезавантаженні). Для майбутнього хостингу потрібна віддача index.html
+для клієнтських маршрутів.
 
 ## План
 Див. docs/project-plan.md

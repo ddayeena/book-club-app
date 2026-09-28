@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ReadingStatusBadge from './ReadingStatusBadge.jsx'
 import AppButton from '../ui/AppButton.jsx'
+import { Link } from 'react-router'
 
 export default function ClubCard({ club, selected, onSelect }) {
   const [detailsOpen, setDetailsOpen] = useState(false)
@@ -8,7 +9,11 @@ export default function ClubCard({ club, selected, onSelect }) {
 
   return (
     <article className="club-card">
-      <h3>{club.name}</h3>
+      <h3>
+        <Link to={`/clubs/${encodeURIComponent(club.id)}`}>
+          {club.name}
+        </Link>
+      </h3>
       <p className="genre">{club.genre}</p>
       <p><ReadingStatusBadge currentBook={club.currentBook} /></p>
 

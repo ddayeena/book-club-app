@@ -1,22 +1,44 @@
+import { Route, Routes } from 'react-router'
 import AppLayout from './components/layout/AppLayout.jsx'
-import ClubSelectionProvider from './providers/ClubSelectionProvider.jsx'
+import RequestsLayout from './components/layout/RequestsLayout.jsx'
+import HomePage from './pages/HomePage.jsx'
 import CatalogContainer from './pages/CatalogContainer.jsx'
-import JoinContainer from './pages/JoinContainer.jsx'
+import ClubDetailsPage from './pages/ClubDetailsPage.jsx'
+import RequestsPage from './pages/RequestsPage.jsx'
+import RequestCreatePage from './pages/RequestCreatePage.jsx'
+import RequestEditPage from './pages/RequestEditPage.jsx'
+import NotFoundPage from './pages/NotFoundPage.jsx'
 import { clubs } from './data/clubs.js'
-
-const navigationLinks = [
-  { href: '#about', label: 'Про застосунок' },
-  { href: '#catalog', label: 'Клуби' },
-  { href: '#join', label: 'Заявка на приєднання' },
-]
+import { requests } from './data/requests.js'
 
 export default function App() {
   return (
-    <AppLayout title="Книжкові клуби" links={navigationLinks}>
-      <ClubSelectionProvider clubs={clubs}>
-        <CatalogContainer clubs={clubs} />
-        <JoinContainer />
-      </ClubSelectionProvider>
-    </AppLayout>
+    <Routes>
+      <Route element={<AppLayout clubs={clubs} />}>
+        <Route index element={<HomePage />} />
+
+        <Route path="clubs">
+          <Route index element={<CatalogContainer clubs={clubs} />} />
+          <Route
+            path=":clubId"
+            element={<ClubDetailsPage clubs={clubs} />}
+          />
+        </Route>
+
+        <Route path="requests" element={<RequestsLayout />}>
+          <Route
+            index
+            element={<RequestsPage requests={requests} clubs={clubs} />}
+          />
+          <Route path="new" element={<RequestCreatePage clubs={clubs} />} />
+          <Route
+            path=":requestId/edit"
+            element={<RequestEditPage requests={requests} clubs={clubs} />}
+          />
+        </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   )
 }
