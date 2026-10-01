@@ -6,37 +6,29 @@ import CatalogContainer from './pages/CatalogContainer.jsx'
 import ClubDetailsPage from './pages/ClubDetailsPage.jsx'
 import RequestsPage from './pages/RequestsPage.jsx'
 import RequestCreatePage from './pages/RequestCreatePage.jsx'
+import RequestDetailsPage from './pages/RequestDetailsPage.jsx'
 import RequestEditPage from './pages/RequestEditPage.jsx'
 import NotFoundPage from './pages/NotFoundPage.jsx'
 import { clubs } from './data/clubs.js'
-import { requests } from './data/requests.js'
 
 export default function App() {
   return (
     <Routes>
       <Route element={<AppLayout clubs={clubs} />}>
-        <Route index element={<HomePage />} />
-
+        <Route index element={<HomePage clubs={clubs} />} />
         <Route path="clubs">
           <Route index element={<CatalogContainer clubs={clubs} />} />
-          <Route
-            path=":clubId"
-            element={<ClubDetailsPage clubs={clubs} />}
-          />
+          <Route path=":clubId" element={<ClubDetailsPage clubs={clubs} />} />
         </Route>
-
         <Route path="requests" element={<RequestsLayout />}>
-          <Route
-            index
-            element={<RequestsPage requests={requests} clubs={clubs} />}
-          />
+          <Route index element={<RequestsPage clubs={clubs} />} />
           <Route path="new" element={<RequestCreatePage clubs={clubs} />} />
+          <Route path=":requestId" element={<RequestDetailsPage clubs={clubs} />} />
           <Route
             path=":requestId/edit"
-            element={<RequestEditPage requests={requests} clubs={clubs} />}
+            element={<RequestEditPage clubs={clubs} />}
           />
         </Route>
-
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
