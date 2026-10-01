@@ -12,10 +12,8 @@ const navigationLinks = [
 export default function AppLayout({ clubs }) {
   return (
     <>
-      <a className="skip-link" href="#main-content">
-        Перейти до вмісту
-      </a>
       <SiteHeader title="Книжкові клуби" links={navigationLinks} />
+
       <main id="main-content" tabIndex={-1}>
         <ClubSelectionProvider clubs={clubs}>
           <RequestsProvider clubs={clubs}>
@@ -23,7 +21,11 @@ export default function AppLayout({ clubs }) {
           </RequestsProvider>
         </ClubSelectionProvider>
       </main>
-      <footer>Навчальний проєкт. Каталог клубів і підготовка заявки на приєднання.</footer>
+      <footer>
+        <div className="footer-inner">
+          Навчальний проєкт. Каталог клубів і підготовка заявки на приєднання.
+        </div>
+      </footer>
     </>
   )
 }

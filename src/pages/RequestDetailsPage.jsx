@@ -28,26 +28,35 @@ export default function RequestDetailsPage({ clubs }) {
     <>
       <PageHeading title={`Заявка ${request.id}`} />
       {error && <p role="alert">{error}</p>}
-      <dl>
-        <dt>Клуб</dt>
-        <dd>{club?.name ?? 'Клуб відсутній у каталозі'}</dd>
-        <dt>Мотивація</dt>
-        <dd>{request.motivation}</dd>
-        <dt>Годин на тиждень</dt>
-        <dd>{request.weeklyHours}</dd>
-        <dt>Нагадування</dt>
-        <dd>{request.wantsReminders ? 'Увімкнено' : 'Вимкнено'}</dd>
-      </dl>
-      <p>Збережена заявка не є підтвердженням членства.</p>
+
+      <aside className="summary-card" aria-labelledby="request-details-title">
+        <h3 id="request-details-title">Збережена заявка</h3>
+        <dl>
+          <dt>Клуб</dt>
+          <dd>{club?.name ?? 'Клуб відсутній у каталозі'}</dd>
+          <dt>Мотивація</dt>
+          <dd>{request.motivation}</dd>
+          <dt>Годин на тиждень</dt>
+          <dd>{request.weeklyHours}</dd>
+          <dt>Нагадування про зустрічі</dt>
+          <dd>
+            <span className={`summary-badge ${request.wantsReminders ? 'on' : 'off'}`}>
+              {request.wantsReminders ? 'Увімкнено' : 'Вимкнено'}
+            </span>
+          </dd>
+        </dl>
+        <p className="summary-note">Збережена заявка не є підтвердженням членства.</p>
+      </aside>
+
       <p>
-        <Link to={`/requests/${encodeURIComponent(request.id)}/edit`}>
+        <Link to={`/requests/${encodeURIComponent(request.id)}/edit`} className="link-inline">
           Редагувати заявку
         </Link>
       </p>
       <AppButton variant="secondary" onClick={handleDelete}>
         Видалити заявку
       </AppButton>
-      <p><Link to="/requests">До всіх заявок</Link></p>
+      <p><Link to="/requests" className="link-inline">До всіх заявок</Link></p>
     </>
   )
 }
