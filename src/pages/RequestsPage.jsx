@@ -1,46 +1,57 @@
+import { useState } from 'react'
 import { Link } from 'react-router'
 import PageHeading from '../components/ui/PageHeading.jsx'
 import EmptyState from '../components/ui/EmptyState.jsx'
+import AppButton from '../components/ui/AppButton.jsx'
+import RequestFilters from '../components/requests/RequestFilters.jsx'
+import RequestTable from '../components/requests/RequestTable.jsx'
+import useRequests from '../hooks/useRequests.js'
+import useRequestFilters from '../hooks/useRequestFilters.js'
+import useDeleteRequest from '../hooks/useDeleteRequest.js'
 
-export default function RequestsPage({ requests, clubs }) {
+export default function RequestsPage({ clubs }) {
+  const { requests } = useRequests()
+  const filters = useRequestFilters(requests, clubs)
+  const deleteWithConfirmation = useDeleteRequest(clubs)
+  const [error, setError] = useState('')
+
+  function handleDelete(request) {
+    setError('')
+    const result = deleteWithConfirmation(request)
+    if (!result.ok && !result.cancelled) setError(result.message)
+  }
+
   return (
     <>
       <PageHeading title="Заявки на приєднання" />
-      <p>Нижче наведено локальні демонстраційні записи.</p>
+      <p><Link to="/requests/new">Створити заявку</Link></p>
+      <RequestFilters
+        query={filters.query}
+        reminders={filters.reminders}
+        sort={filters.sort}
+        onQueryChange={filters.setQuery}
+        onRemindersChange={filters.setReminders}
+        onSortChange={filters.setSort}
+        onReset={filters.resetFilters}
+      />
+      <p>Показано: {filters.visibleRequests.length} із {requests.length}</p>
+      {error && <p role="alert">{error}</p>}
       {requests.length === 0 ? (
         <EmptyState title="Заявок ще немає.">
-          <p><Link to="new">Підготувати нову заявку</Link></p>
+          <p><Link to="/clubs">Виберіть клуб для першої заявки</Link></p>
+        </EmptyState>
+      ) : filters.visibleRequests.length === 0 ? (
+        <EmptyState title="За цими умовами нічого не знайдено.">
+          <AppButton variant="secondary" onClick={filters.resetFilters}>
+            Показати всі заявки
+          </AppButton>
         </EmptyState>
       ) : (
-        <div className="table-scroll">
-          <table className="requests-table">
-            <caption>Заявки для перевірки навігації</caption>
-            <thead>
-              <tr>
-                <th scope="col">Клуб</th>
-                <th scope="col">Мотивація</th>
-                <th scope="col">Дія</th>
-              </tr>
-            </thead>
-            <tbody>
-              {requests.map((request) => {
-                const club = clubs.find((entry) => entry.id === request.clubId)
-
-                return (
-                  <tr key={request.id}>
-                    <td>{club?.name ?? 'Клуб відсутній у каталозі'}</td>
-                    <td>{request.motivation}</td>
-                    <td>
-                      <Link to={`${encodeURIComponent(request.id)}/edit`}>
-                        Редагувати {request.id}
-                      </Link>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+        <RequestTable
+          requests={filters.visibleRequests}
+          clubs={clubs}
+          onDelete={handleDelete}
+        />
       )}
     </>
   )

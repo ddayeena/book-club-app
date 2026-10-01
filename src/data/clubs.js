@@ -5,6 +5,7 @@ export const clubs = [
     genre: 'Художня література',
     currentBook: 'Малий Кобзар',
     membersCount: 12,
+    weeklyHours: 1,
     description: 'Читаємо й обговорюємо сучасну українську прозу щомісяця.',
   },
   {
@@ -13,6 +14,7 @@ export const clubs = [
     genre: 'Наукпоп',
     currentBook: null,
     membersCount: 5,
+    weeklyHours: 2,
     description: 'Обговорюємо книги про науку доступною мовою.',
   },
   {
@@ -21,6 +23,7 @@ export const clubs = [
     genre: 'Детектив',
     currentBook: 'Вбивство у "Східному експресі"',
     membersCount: 8,
+    weeklyHours: 1,
     description: 'Розбираємо класичні та сучасні детективи.',
   },
   {
@@ -29,6 +32,7 @@ export const clubs = [
     genre: 'Фентезі',
     currentBook: 'Відьмак. Останнє бажання',
     membersCount: 10,
+    weeklyHours: 3,
     description: 'Досліджуємо магічні світи, епічні саги та міфологію.',
   },
   {
@@ -37,6 +41,7 @@ export const clubs = [
     genre: 'Психологія',
     currentBook: 'Людина в пошуках справжнього сенсу',
     membersCount: 18,
+    weeklyHours: 2,
     description: 'Читаємо праці про мислення, формування звичок та емоційний інтелект.',
   },
   {
@@ -45,6 +50,7 @@ export const clubs = [
     genre: 'Історичний роман',
     currentBook: null,
     membersCount: 6,
+    weeklyHours: 1,
     description: 'Обговорюємо історичні романи, мемуари та ключові події минулого.',
   }
 ]

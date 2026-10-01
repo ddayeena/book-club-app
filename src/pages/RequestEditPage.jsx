@@ -1,30 +1,29 @@
 import { useNavigate, useParams } from 'react-router'
+import useRequests from '../hooks/useRequests.js'
 import JoinPage from './JoinPage.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 
-export default function RequestEditPage({ requests, clubs }) {
+export default function RequestEditPage({ clubs }) {
   const { requestId } = useParams()
   const navigate = useNavigate()
+  const { requests, updateRequest } = useRequests()
   const request = requests.find((entry) => entry.id === requestId)
 
   if (!request) {
-    return (
-      <NotFoundPage
-        title="Заявку не знайдено"
-        message="Перевірте ідентифікатор заявки в адресі."
-      />
-    )
+    return <NotFoundPage title="Заявку для редагування не знайдено" />
   }
 
   const club = clubs.find((entry) => entry.id === request.clubId)
+  if (!club) return <NotFoundPage title="Клуб заявки відсутній" />
 
-  if (!club) {
-    return (
-      <NotFoundPage
-        title="Клуб заявки відсутній"
-        message="Демонстраційний запис посилається на клуб, якого немає в каталозі."
-      />
-    )
+  function handleSave(input) {
+    const result = updateRequest(request.id, input)
+    if (result.ok) {
+      navigate(`/requests/${encodeURIComponent(result.record.id)}`, {
+        replace: true,
+      })
+    }
+    return result
   }
 
   return (
@@ -34,9 +33,12 @@ export default function RequestEditPage({ requests, clubs }) {
       club={club}
       initialDraft={{
         motivation: request.motivation,
+        weeklyHours: request.weeklyHours,
         wantsReminders: request.wantsReminders,
       }}
-      onCancel={() => navigate('/requests')}
+      onSave={handleSave}
+      submitLabel="Зберегти зміни"
+      onCancel={() => navigate(`/requests/${encodeURIComponent(request.id)}`)}
     />
   )
 }
