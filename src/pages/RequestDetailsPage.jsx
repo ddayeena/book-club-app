@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import PageHeading from '../components/ui/PageHeading.jsx'
 import AppButton from '../components/ui/AppButton.jsx'
@@ -9,17 +9,25 @@ import NotFoundPage from './NotFoundPage.jsx'
 export default function RequestDetailsPage({ clubs }) {
   const { requestId } = useParams()
   const navigate = useNavigate()
-  const { requests } = useRequests()
+  const { requests, isMutating } = useRequests()
   const deleteWithConfirmation = useDeleteRequest(clubs)
   const [error, setError] = useState('')
-  const request = requests.find((entry) => entry.id === requestId)
+  const pageAlive = useRef(false)
 
+  useEffect(() => {
+    pageAlive.current = true
+    return () => { pageAlive.current = false }
+  }, [])
+
+  const request = requests.find((entry) => entry.id === requestId)
   if (!request) return <NotFoundPage title="Заявку не знайдено" />
   const club = clubs.find((entry) => entry.id === request.clubId)
 
-  function handleDelete() {
+  async function handleDelete() {
+    if (isMutating) return
     setError('')
-    const result = deleteWithConfirmation(request)
+    const result = await deleteWithConfirmation(request)
+    if (!pageAlive.current) return
     if (result.ok) navigate('/requests', { replace: true })
     else if (!result.cancelled) setError(result.message)
   }
@@ -53,9 +61,10 @@ export default function RequestDetailsPage({ clubs }) {
           Редагувати заявку
         </Link>
       </p>
-      <AppButton variant="secondary" onClick={handleDelete}>
+      <AppButton variant="secondary" onClick={handleDelete} disabled={isMutating}>
         Видалити заявку
       </AppButton>
+      <p role="status">{isMutating ? 'Опрацювання зміни…' : ''}</p>
       <p><Link to="/requests" className="link-inline">До всіх заявок</Link></p>
     </>
   )

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import useRequests from '../hooks/useRequests.js'
 import JoinPage from './JoinPage.jsx'
@@ -8,6 +9,18 @@ export default function RequestEditPage({ clubs }) {
   const navigate = useNavigate()
   const { requests, updateRequest } = useRequests()
   const request = requests.find((entry) => entry.id === requestId)
+  const pageAlive = useRef(false)
+  const activeId = useRef(requestId)
+
+  useEffect(() => {
+    pageAlive.current = true
+    return () => { pageAlive.current = false }
+  }, [])
+
+  useEffect(() => {
+    activeId.current = requestId
+    return () => { activeId.current = null }
+  }, [requestId])
 
   if (!request) {
     return <NotFoundPage title="Заявку для редагування не знайдено" />
@@ -16,9 +29,9 @@ export default function RequestEditPage({ clubs }) {
   const club = clubs.find((entry) => entry.id === request.clubId)
   if (!club) return <NotFoundPage title="Клуб заявки відсутній" />
 
-  function handleSave(input) {
-    const result = updateRequest(request.id, input)
-    if (result.ok) {
+  async function handleSave(input) {
+    const result = await updateRequest(request.id, input)
+    if (result.ok && pageAlive.current && activeId.current === request.id) {
       navigate(`/requests/${encodeURIComponent(result.record.id)}`, {
         replace: true,
       })

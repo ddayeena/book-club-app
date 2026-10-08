@@ -16,7 +16,7 @@ export default function AppLayout({ clubs }) {
 
       <main id="main-content" tabIndex={-1}>
         <ClubSelectionProvider clubs={clubs}>
-          <RequestsProvider clubs={clubs}>
+          <RequestsProvider>
             <Outlet />
           </RequestsProvider>
         </ClubSelectionProvider>
