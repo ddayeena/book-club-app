@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import PageHeading from '../components/ui/PageHeading.jsx'
 import Section from '../components/ui/Section.jsx'
 import AppButton from '../components/ui/AppButton.jsx'
@@ -22,6 +22,15 @@ export default function JoinPage({
   const [touched, setTouched] = useState({})
   const [attempted, setAttempted] = useState(false)
   const [operationError, setOperationError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const submitting = useRef(false)
+  const alive = useRef(false)
+
+  useEffect(() => {
+    alive.current = true
+    return () => { alive.current = false }
+  }, [])
+
   const validation = validateRequest({ ...draft, clubId: club.id }, [club])
   const errors = Object.fromEntries(
     Object.entries(validation.errors).filter(([field]) => (
@@ -41,10 +50,12 @@ export default function JoinPage({
     setTouched((previous) => ({ ...previous, [field]: true }))
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
+    if (submitting.current) return
     setAttempted(true)
     setOperationError('')
+
     if (!validation.ok) {
       const firstField = ['motivation', 'weeklyHours', 'wantsReminders']
         .find((field) => validation.errors[field])
@@ -52,13 +63,27 @@ export default function JoinPage({
       return
     }
 
-    const result = onSave(validation.value)
-    if (!result.ok) {
-      setOperationError(result.message || Object.values(result.errors).join(' '))
+    submitting.current = true
+    setIsSubmitting(true)
+    try {
+      const result = await onSave(validation.value)
+      if (!result.ok && alive.current) {
+        setOperationError(
+          result.errors
+            ? Object.values(result.errors).join(' ')
+            : result.message || 'Не вдалося зберегти заявку.',
+        )
+      }
+    } catch {
+      if (alive.current) setOperationError('Не вдалося завершити збереження.')
+    } finally {
+      submitting.current = false
+      if (alive.current) setIsSubmitting(false)
     }
   }
 
   function handleReset() {
+    if (submitting.current) return
     if (!isDirty) return
     if (!window.confirm('Відкинути введені зміни та відновити початкові поля?')) {
       return
@@ -70,6 +95,7 @@ export default function JoinPage({
   }
 
   function handleCancel() {
+    if (submitting.current) return
     if (isDirty && !window.confirm('Вийти та відкинути незбережені зміни?')) return
     onCancel()
   }
@@ -85,6 +111,7 @@ export default function JoinPage({
           draft={draft}
           errors={errors}
           operationError={operationError}
+          isSubmitting={isSubmitting}
           onChange={handleChange}
           onBlur={handleBlur}
           onSubmit={handleSubmit}
@@ -93,7 +120,7 @@ export default function JoinPage({
         />
         <JoinSummary clubName={club.name} draft={draft} />
       </Section>
-      <AppButton variant="secondary" onClick={handleCancel}>
+      <AppButton variant="secondary" onClick={handleCancel} disabled={isSubmitting}>
         {cancelLabel}
       </AppButton>
     </>

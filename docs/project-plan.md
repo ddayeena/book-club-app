@@ -53,3 +53,14 @@
 | /requests/new?clubId=club-001     | RequestCreatePage  | clubId (query)             | data/clubs.js             | Без параметра — пропозиція обрати клуб; з невідомим — «Неможливо підготувати заявку» |
 | /requests/:requestId/edit         | RequestEditPage    | requestId (шлях)           | data/requests.js + clubs.js | «Заявку не знайдено» / «Клуб заявки відсутній» |
 | * (інші адреси)                   | NotFoundPage       | —                          | —                         | Пояснення невідомого маршруту              |
+
+
+## Дані
+Джерело даних визначається VITE_DATA_SOURCE ( шаблон — .env.example):
+- mock (за замовчуванням) — заявки зберігаються в localStorage цього браузера
+  під ключем bookclub.requests.v1, переживають перезавантаження, не синхронізуються
+  між браузерами чи пристроями.
+- api — заявки читаються й записуються через VITE_API_BASE_URL за контрактом
+  GET/POST/PUT/DELETE /requests. [ ще не перевірено реальним сервісом]
+
+Каталог клубів (data/clubs.js) лишається локальним і статичним у цій роботі.

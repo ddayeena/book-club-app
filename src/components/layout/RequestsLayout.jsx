@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router'
 import RequestNotice from '../requests/RequestNotice.jsx'
+import RequestsGate from '../requests/RequestsGate.jsx'
 
 export default function RequestsLayout() {
   return (
@@ -10,9 +11,10 @@ export default function RequestsLayout() {
           <li><NavLink to="new">Нова заявка</NavLink></li>
         </ul>
       </nav>
-      <p>Локальні дані зберігаються до перезавантаження сторінки.</p>
       <RequestNotice />
-      <Outlet />
+      <RequestsGate>
+        <Outlet />
+      </RequestsGate>
     </>
   )
 }

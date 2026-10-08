@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
 import PageHeading from '../components/ui/PageHeading.jsx'
 import EmptyState from '../components/ui/EmptyState.jsx'
@@ -12,6 +13,12 @@ export default function RequestCreatePage({ clubs }) {
   const { selectedId, clearSelection } = useClubSelection()
   const { createRequest } = useRequests()
   const clubId = searchParams.get('clubId')
+  const pageAlive = useRef(false)
+
+  useEffect(() => {
+    pageAlive.current = true
+    return () => { pageAlive.current = false }
+  }, [])
 
   if (clubId === null) {
     const search = selectedId
@@ -33,9 +40,9 @@ export default function RequestCreatePage({ clubs }) {
     return <NotFoundPage title="Клуб нової заявки не знайдено" />
   }
 
-  function handleSave(input) {
-    const result = createRequest(input)
-    if (result.ok) {
+  async function handleSave(input) {
+    const result = await createRequest(input)
+    if (result.ok && pageAlive.current) {
       navigate(`/requests/${encodeURIComponent(result.record.id)}`, {
         replace: true,
       })

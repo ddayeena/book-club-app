@@ -11,21 +11,20 @@ const navigationLinks = [
 
 export default function AppLayout({ clubs }) {
   return (
-    <>
+    <div className="app-shell">
       <SiteHeader title="Книжкові клуби" links={navigationLinks} />
-
-      <main id="main-content" tabIndex={-1}>
-        <ClubSelectionProvider clubs={clubs}>
-          <RequestsProvider clubs={clubs}>
-            <Outlet />
-          </RequestsProvider>
-        </ClubSelectionProvider>
-      </main>
-      <footer>
-        <div className="footer-inner">
-          Навчальний проєкт. Каталог клубів і підготовка заявки на приєднання.
-        </div>
-      </footer>
-    </>
+      <div className="app-content">
+        <main id="main-content" tabIndex={-1}>
+          <ClubSelectionProvider clubs={clubs}>
+            <RequestsProvider>
+              <Outlet />
+            </RequestsProvider>
+          </ClubSelectionProvider>
+        </main>
+        <footer>
+          Навчальний проєкт «Книжкові клуби». Каталог, заявки на приєднання, обговорення.
+        </footer>
+      </div>
+    </div>
   )
 }
