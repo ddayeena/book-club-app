@@ -14,36 +14,43 @@ export default function RequestsProvider({ children }) {
   const mutationLock = useRef(false)
   const mounted = useRef(false)
 
-  const reload = useCallback(async () => {
-    if (mutationLock.current) return
+  const load = useCallback(() => {
     activeRead.current?.abort()
     const controller = new AbortController()
     activeRead.current = controller
     const version = ++readVersion.current
+    const isStale = () => controller.signal.aborted || version !== readVersion.current
+
+    return requestService.getAll({ signal: controller.signal }).then(
+      (records) => {
+        if (isStale()) return
+        setRequests(records)
+        setStatus('success')
+      },
+      (cause) => {
+        if (isStale()) return
+        setError(errorMessage(cause))
+        setStatus('error')
+      },
+    )
+  }, [])
+
+  const reload = useCallback(() => {
+    if (mutationLock.current) return Promise.resolve()
     setStatus('loading')
     setError('')
-
-    try {
-      const records = await requestService.getAll({ signal: controller.signal })
-      if (controller.signal.aborted || version !== readVersion.current) return
-      setRequests(records)
-      setStatus('success')
-    } catch (cause) {
-      if (controller.signal.aborted || version !== readVersion.current) return
-      setError(errorMessage(cause))
-      setStatus('error')
-    }
-  }, [])
+    return load()
+  }, [load])
 
   useEffect(() => {
     mounted.current = true
-    void reload()
+    void load()
     return () => {
       mounted.current = false
       activeRead.current?.abort()
       readVersion.current += 1
     }
-  }, [reload])
+  }, [load])
 
   async function mutate(operation, apply, message) {
     if (mutationLock.current || status !== 'success') {

@@ -28,8 +28,10 @@ export default function RequestCreatePage({ clubs }) {
       <>
         <PageHeading title="Нова заявка" />
         <EmptyState title="Спочатку виберіть клуб.">
-          <p><Link to="/clubs">Відкрити каталог</Link></p>
-          {search && <p><Link to={search}>Використати останній вибір</Link></p>}
+          <p><Link to="/clubs" className="link-inline">Відкрити каталог</Link></p>
+          {search && (
+            <p><Link to={search} className="link-inline">Використати останній вибір</Link></p>
+          )}
         </EmptyState>
       </>
     )

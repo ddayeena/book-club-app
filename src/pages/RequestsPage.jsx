@@ -8,13 +8,17 @@ import RequestTable from '../components/requests/RequestTable.jsx'
 import useRequests from '../hooks/useRequests.js'
 import useRequestFilters from '../hooks/useRequestFilters.js'
 import useDeleteRequest from '../hooks/useDeleteRequest.js'
-import { failNextMockRequest } from '../services/mockRequestService.js'
 
 export default function RequestsPage({ clubs }) {
   const { requests, isMutating, reload } = useRequests()
   const filters = useRequestFilters(requests, clubs)
   const deleteWithConfirmation = useDeleteRequest(clubs)
   const [error, setError] = useState('')
+
+  const withReminders = requests.filter((request) => request.wantsReminders).length
+  const averageHours = requests.length === 0
+    ? 0
+    : requests.reduce((sum, request) => sum + request.weeklyHours, 0) / requests.length
 
   async function handleDelete(request) {
     setError('')
@@ -25,18 +29,42 @@ export default function RequestsPage({ clubs }) {
   return (
     <>
       <PageHeading title="Заявки на приєднання" />
+
+      <div className="catalog-stats">
+        <div className="stat-card">
+          <span className="stat-number">{requests.length}</span>
+          <span className="stat-label">Усього заявок</span>
+        </div>
+        <div className="stat-card">
+          <span className="stat-number">{withReminders}</span>
+          <span className="stat-label">З нагадуваннями</span>
+        </div>
+        <div className="stat-card">
+          <span className="stat-number">{averageHours.toFixed(1)}</span>
+          <span className="stat-label">Годин на тиждень у середньому</span>
+        </div>
+      </div>
+
       <div className="page-toolbar">
         <Link to="/requests/new" className="link-button">Створити заявку</Link>
         <AppButton variant="secondary" disabled={isMutating} onClick={() => void reload()}>
           Оновити дані
         </AppButton>
       </div>
+
       <RequestFilters
         query={filters.query}
         reminders={filters.reminders}
+        experience={filters.experience}
+        format={filters.format}
+        club={filters.club}
         sort={filters.sort}
+        clubs={clubs}
         onQueryChange={filters.setQuery}
         onRemindersChange={filters.setReminders}
+        onExperienceChange={filters.setExperience}
+        onFormatChange={filters.setFormat}
+        onClubChange={filters.setClub}
         onSortChange={filters.setSort}
         onReset={filters.resetFilters}
       />
@@ -53,25 +81,16 @@ export default function RequestsPage({ clubs }) {
         </EmptyState>
       ) : (
         <>
-          <p role="status">Знайдено заявок: {filters.visibleRequests.length} із {requests.length}</p>
-          <RequestTable requests={filters.visibleRequests} clubs={clubs} onDelete={handleDelete} />
+          <p role="status">
+            Знайдено заявок: {filters.visibleRequests.length} із {requests.length}
+          </p>
+          <RequestTable
+            requests={filters.visibleRequests}
+            clubs={clubs}
+            onDelete={handleDelete}
+            isMutating={isMutating}
+          />
         </>
-      )}
-
-      {import.meta.env.DEV && (import.meta.env.VITE_DATA_SOURCE ?? 'mock') === 'mock' && (
-        <div className="dev-panel">
-          <p>Лише для розробки — перевірка відмов mock-сервісу</p>
-          <AppButton
-            variant="secondary"
-            disabled={isMutating}
-            onClick={() => {
-              failNextMockRequest('getAll')
-              void reload()
-            }}
-          >
-            Перевірити відмову читання
-          </AppButton>
-        </div>
       )}
     </>
   )

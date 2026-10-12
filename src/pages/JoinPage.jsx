@@ -7,18 +7,41 @@ import JoinForm from '../components/join/JoinForm.jsx'
 import JoinSummary from '../components/join/JoinSummary.jsx'
 import { validateRequest } from '../domain/requestValidation.js'
 
-const emptyDraft = { motivation: '', weeklyHours: '1', wantsReminders: false }
+const emptyDraft = {
+  motivation: '',
+  weeklyHours: '1',
+  wantsReminders: false,
+  experience: 'beginner',
+  participationFormat: 'any',
+  contactEmail: '',
+}
+
+const fieldOrder = [
+  'motivation',
+  'weeklyHours',
+  'experience',
+  'participationFormat',
+  'contactEmail',
+  'wantsReminders',
+]
+
+function toDraft(source) {
+  return {
+    motivation: source.motivation,
+    weeklyHours: String(source.weeklyHours),
+    wantsReminders: source.wantsReminders,
+    experience: source.experience,
+    participationFormat: source.participationFormat,
+    contactEmail: source.contactEmail ?? '',
+  }
+}
 
 export default function JoinPage({
   title, club, initialDraft = emptyDraft,
   onSave, onCancel, submitLabel, cancelLabel = 'Вийти без збереження',
 }) {
-  const initialValues = {
-    motivation: initialDraft.motivation,
-    weeklyHours: String(initialDraft.weeklyHours),
-    wantsReminders: initialDraft.wantsReminders,
-  }
-  const [draft, setDraft] = useState(() => ({ ...initialValues }))
+  const initialValues = toDraft(initialDraft)
+  const [draft, setDraft] = useState(() => toDraft(initialDraft))
   const [touched, setTouched] = useState({})
   const [attempted, setAttempted] = useState(false)
   const [operationError, setOperationError] = useState('')
@@ -37,9 +60,7 @@ export default function JoinPage({
       attempted || touched[field]
     )),
   )
-  const isDirty = draft.motivation !== initialValues.motivation
-    || draft.weeklyHours !== initialValues.weeklyHours
-    || draft.wantsReminders !== initialValues.wantsReminders
+  const isDirty = fieldOrder.some((field) => draft[field] !== initialValues[field])
 
   function handleChange(field, value) {
     setDraft((previous) => ({ ...previous, [field]: value }))
@@ -57,8 +78,7 @@ export default function JoinPage({
     setOperationError('')
 
     if (!validation.ok) {
-      const firstField = ['motivation', 'weeklyHours', 'wantsReminders']
-        .find((field) => validation.errors[field])
+      const firstField = fieldOrder.find((field) => validation.errors[field])
       if (firstField) event.currentTarget.elements.namedItem(firstField)?.focus()
       return
     }
@@ -88,7 +108,7 @@ export default function JoinPage({
     if (!window.confirm('Відкинути введені зміни та відновити початкові поля?')) {
       return
     }
-    setDraft({ ...initialValues })
+    setDraft(toDraft(initialDraft))
     setTouched({})
     setAttempted(false)
     setOperationError('')
@@ -105,20 +125,22 @@ export default function JoinPage({
       <PageHeading title={title} />
       <Section id="join-editor" title="Поля та підсумок">
         <p><ReadingStatusBadge currentBook={club.currentBook} /></p>
-        <JoinForm
-          idPrefix="join-draft"
-          clubName={club.name}
-          draft={draft}
-          errors={errors}
-          operationError={operationError}
-          isSubmitting={isSubmitting}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          onSubmit={handleSubmit}
-          onReset={handleReset}
-          submitLabel={submitLabel}
-        />
-        <JoinSummary clubName={club.name} draft={draft} />
+        <div className="editor-layout">
+          <JoinForm
+            idPrefix="join-draft"
+            clubName={club.name}
+            draft={draft}
+            errors={errors}
+            operationError={operationError}
+            isSubmitting={isSubmitting}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            onSubmit={handleSubmit}
+            onReset={handleReset}
+            submitLabel={submitLabel}
+          />
+          <JoinSummary clubName={club.name} draft={draft} />
+        </div>
       </Section>
       <AppButton variant="secondary" onClick={handleCancel} disabled={isSubmitting}>
         {cancelLabel}

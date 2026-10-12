@@ -22,6 +22,10 @@ export function toRequest(value) {
     && typeof value.motivation === 'string'
     && Number.isInteger(value.weeklyHours)
     && typeof value.wantsReminders === 'boolean'
+    && typeof value.experience === 'string'
+    && typeof value.participationFormat === 'string'
+    && typeof value.contactEmail === 'string'
+    && typeof value.createdAt === 'string'
 
   if (!valid) {
     throw new ServiceError('Джерело повернуло некоректний запис заявки.', {
@@ -35,6 +39,10 @@ export function toRequest(value) {
     motivation: value.motivation,
     weeklyHours: value.weeklyHours,
     wantsReminders: value.wantsReminders,
+    experience: value.experience,
+    participationFormat: value.participationFormat,
+    contactEmail: value.contactEmail,
+    createdAt: value.createdAt,
   }
 }
 

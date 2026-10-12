@@ -1,32 +1,30 @@
 import { useSearchParams } from 'react-router'
+import {
+  experienceOptions,
+  isOption,
+  participationOptions,
+} from '../domain/options.js'
+import { selectRequests } from '../domain/selectRequests.js'
 
 export default function useRequestFilters(requests, clubs) {
   const [searchParams, setSearchParams] = useSearchParams()
+
   const query = searchParams.get('q') ?? ''
   const rawReminders = searchParams.get('reminders')
   const reminders = ['yes', 'no'].includes(rawReminders) ? rawReminders : 'all'
+  const rawExperience = searchParams.get('experience')
+  const experience = isOption(experienceOptions, rawExperience) ? rawExperience : 'all'
+  const rawFormat = searchParams.get('format')
+  const format = isOption(participationOptions, rawFormat) ? rawFormat : 'all'
+  const rawClub = searchParams.get('club')
+  const club = clubs.some((entry) => entry.id === rawClub) ? rawClub : 'all'
   const rawSort = searchParams.get('sort')
-  const sort = ['hours-asc', 'hours-desc'].includes(rawSort) ? rawSort : 'club'
-  const names = new Map(clubs.map((club) => [club.id, club.name]))
-  const normalizedQuery = query.trim().toLocaleLowerCase('uk')
+  const sort = ['hours-asc', 'hours-desc', 'newest'].includes(rawSort)
+    ? rawSort
+    : 'club'
 
-  const visibleRequests = requests.filter((request) => {
-    const text = `${names.get(request.clubId) ?? ''} ${request.motivation}`
-      .toLocaleLowerCase('uk')
-    const matchesReminders = reminders === 'all'
-      || (reminders === 'yes' ? request.wantsReminders : !request.wantsReminders)
-    return text.includes(normalizedQuery) && matchesReminders
-  })
-
-  visibleRequests.sort((a, b) => {
-    let order = 0
-    if (sort === 'hours-asc') order = a.weeklyHours - b.weeklyHours
-    else if (sort === 'hours-desc') order = b.weeklyHours - a.weeklyHours
-    else {
-      order = (names.get(a.clubId) ?? '')
-        .localeCompare(names.get(b.clubId) ?? '', 'uk')
-    }
-    return order || a.id.localeCompare(b.id)
+  const visibleRequests = selectRequests(requests, clubs, {
+    query, reminders, experience, format, club, sort,
   })
 
   function setParameter(name, value, defaultValue, replace = false) {
@@ -38,16 +36,19 @@ export default function useRequestFilters(requests, clubs) {
 
   function resetFilters() {
     const next = new URLSearchParams(searchParams)
-    next.delete('q')
-    next.delete('reminders')
-    next.delete('sort')
+    for (const name of ['q', 'reminders', 'experience', 'format', 'club', 'sort']) {
+      next.delete(name)
+    }
     setSearchParams(next)
   }
 
   return {
-    query, reminders, sort, visibleRequests,
+    query, reminders, experience, format, club, sort, visibleRequests,
     setQuery: (value) => setParameter('q', value, '', true),
     setReminders: (value) => setParameter('reminders', value, 'all'),
+    setExperience: (value) => setParameter('experience', value, 'all'),
+    setFormat: (value) => setParameter('format', value, 'all'),
+    setClub: (value) => setParameter('club', value, 'all'),
     setSort: (value) => setParameter('sort', value, 'club'),
     resetFilters,
   }

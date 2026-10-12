@@ -4,6 +4,12 @@ import PageHeading from '../components/ui/PageHeading.jsx'
 import AppButton from '../components/ui/AppButton.jsx'
 import useRequests from '../hooks/useRequests.js'
 import useDeleteRequest from '../hooks/useDeleteRequest.js'
+import {
+  experienceOptions,
+  optionLabel,
+  participationOptions,
+} from '../domain/options.js'
+import { formatCreatedAt } from '../domain/dates.js'
 import NotFoundPage from './NotFoundPage.jsx'
 
 export default function RequestDetailsPage({ clubs }) {
@@ -46,24 +52,32 @@ export default function RequestDetailsPage({ clubs }) {
           <dd>{request.motivation}</dd>
           <dt>Годин на тиждень</dt>
           <dd>{request.weeklyHours}</dd>
+          <dt>Досвід читання</dt>
+          <dd>{optionLabel(experienceOptions, request.experience)}</dd>
+          <dt>Формат участі</dt>
+          <dd>{optionLabel(participationOptions, request.participationFormat)}</dd>
+          <dt>Контактна пошта</dt>
+          <dd>{request.contactEmail || 'Не вказано'}</dd>
           <dt>Нагадування про зустрічі</dt>
           <dd>
             <span className={`summary-badge ${request.wantsReminders ? 'on' : 'off'}`}>
               {request.wantsReminders ? 'Увімкнено' : 'Вимкнено'}
             </span>
           </dd>
+          <dt>Створено</dt>
+          <dd>{formatCreatedAt(request.createdAt)}</dd>
         </dl>
         <p className="summary-note">Збережена заявка не є підтвердженням членства.</p>
       </aside>
 
-      <p>
-        <Link to={`/requests/${encodeURIComponent(request.id)}/edit`} className="link-inline">
+      <div className="page-toolbar">
+        <Link to={`/requests/${encodeURIComponent(request.id)}/edit`} className="link-button">
           Редагувати заявку
         </Link>
-      </p>
-      <AppButton variant="secondary" onClick={handleDelete} disabled={isMutating}>
-        Видалити заявку
-      </AppButton>
+        <AppButton variant="secondary" onClick={handleDelete} disabled={isMutating}>
+          Видалити заявку
+        </AppButton>
+      </div>
       <p role="status">{isMutating ? 'Опрацювання зміни…' : ''}</p>
       <p><Link to="/requests" className="link-inline">До всіх заявок</Link></p>
     </>

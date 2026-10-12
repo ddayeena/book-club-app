@@ -1,3 +1,7 @@
+import { experienceOptions, isOption, participationOptions } from './options.js'
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export function validateRequest(input, clubs) {
   const errors = {}
   const motivation = typeof input.motivation === 'string'
@@ -5,6 +9,10 @@ export function validateRequest(input, clubs) {
     : ''
   const hoursText = String(input.weeklyHours ?? '').trim()
   const weeklyHours = Number(hoursText)
+  const rawEmail = input.contactEmail ?? ''
+  const contactEmail = typeof rawEmail === 'string'
+    ? rawEmail.trim().toLowerCase()
+    : ''
 
   if (!clubs.some((club) => club.id === input.clubId)) {
     errors.clubId = 'Виберіть наявний клуб з каталогу.'
@@ -26,6 +34,21 @@ export function validateRequest(input, clubs) {
     errors.weeklyHours = 'Тижневе навантаження має бути цілим числом від 1 до 8.'
   }
 
+  if (!isOption(experienceOptions, input.experience)) {
+    errors.experience = 'Оберіть рівень досвіду читання.'
+  }
+
+  if (!isOption(participationOptions, input.participationFormat)) {
+    errors.participationFormat = 'Оберіть бажаний формат участі.'
+  }
+
+  if (
+    typeof rawEmail !== 'string'
+    || (contactEmail !== '' && (contactEmail.length > 100 || !emailPattern.test(contactEmail)))
+  ) {
+    errors.contactEmail = 'Вкажіть коректну адресу пошти або залиште поле порожнім.'
+  }
+
   if (typeof input.wantsReminders !== 'boolean') {
     errors.wantsReminders = 'Ознака нагадувань має бути логічним значенням.'
   } else if (!errors.weeklyHours && weeklyHours > 4 && !input.wantsReminders) {
@@ -44,6 +67,9 @@ export function validateRequest(input, clubs) {
       motivation,
       weeklyHours,
       wantsReminders: input.wantsReminders,
+      experience: input.experience,
+      participationFormat: input.participationFormat,
+      contactEmail,
     },
   }
 }

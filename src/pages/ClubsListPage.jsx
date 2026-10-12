@@ -7,14 +7,7 @@ import ClubList from '../components/clubs/ClubList.jsx'
 import useClubFilters from '../hooks/useClubFilters.js'
 
 export default function ClubsListPage({ clubs, selectedId, onSelect }) {
-  const {
-    query,
-    setQuery,
-    readingOnly,
-    setReadingOnly,
-    visibleClubs,
-    resetFilters,
-  } = useClubFilters(clubs)
+  const filters = useClubFilters(clubs)
   const requestSearch = selectedId
     ? `?${new URLSearchParams({ clubId: selectedId })}`
     : ''
@@ -25,15 +18,22 @@ export default function ClubsListPage({ clubs, selectedId, onSelect }) {
       <Section id="catalog" title="Пошук і вибір">
         <CatalogSummary total={clubs.length} />
         <ClubFilters
-          query={query}
-          readingOnly={readingOnly}
-          onQueryChange={setQuery}
-          onReadingOnlyChange={setReadingOnly}
-          onReset={resetFilters}
+          query={filters.query}
+          readingOnly={filters.readingOnly}
+          format={filters.format}
+          genre={filters.genre}
+          sort={filters.sort}
+          genres={filters.genres}
+          onQueryChange={filters.setQuery}
+          onReadingOnlyChange={filters.setReadingOnly}
+          onFormatChange={filters.setFormat}
+          onGenreChange={filters.setGenre}
+          onSortChange={filters.setSort}
+          onReset={filters.resetFilters}
         />
-        <p>Показано клубів: {visibleClubs.length}</p>
+        <p role="status">Показано клубів: {filters.visibleClubs.length}</p>
         <ClubList
-          clubs={visibleClubs}
+          clubs={filters.visibleClubs}
           selectedId={selectedId}
           onSelect={onSelect}
           emptyTitle={clubs.length === 0
@@ -41,7 +41,7 @@ export default function ClubsListPage({ clubs, selectedId, onSelect }) {
             : 'За цими фільтрами нічого не знайдено.'}
         />
         <p>
-          <Link to={`/requests/new${requestSearch}`}>
+          <Link to={`/requests/new${requestSearch}`} className="link-inline">
             Підготувати заявку на приєднання
           </Link>
         </p>

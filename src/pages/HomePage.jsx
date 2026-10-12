@@ -2,15 +2,17 @@ import { Link } from 'react-router'
 import { clubs } from '../data/clubs.js'
 import useRequests from '../hooks/useRequests.js'
 import CatalogStats from '../components/clubs/CatalogStats.jsx'
+import { clubFormatOptions, optionLabel } from '../domain/options.js'
+import { meetingParts } from '../domain/dates.js'
 
 const steps = [
   {
     title: 'Оберіть клуб',
-    text: 'Перегляньте каталог і знайдіть клуб за назвою або за тим, що він читає зараз.',
+    text: 'Фільтруйте каталог за жанром, форматом зустрічей і тим, що клуб читає зараз.',
   },
   {
     title: 'Подайте заявку',
-    text: 'Розкажіть, чому хочете приєднатися, і скільки годин на тиждень готові приділяти.',
+    text: 'Розкажіть, чому хочете приєднатися, який у вас досвід і скільки часу готові приділяти.',
   },
   {
     title: 'Читайте разом',
@@ -21,10 +23,15 @@ const steps = [
 export default function HomePage() {
   const { requests, status } = useRequests()
   const readingNow = clubs.filter((club) => club.currentBook)
+  const upcoming = [...clubs]
+    .sort((a, b) => a.nextMeeting.localeCompare(b.nextMeeting))
+    .slice(0, 3)
   const popular = [...clubs]
     .sort((a, b) => b.membersCount - a.membersCount)
     .slice(0, 3)
-  const recent = [...requests].reverse().slice(0, 3)
+  const recent = [...requests]
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .slice(0, 3)
 
   function clubName(id) {
     return clubs.find((club) => club.id === id)?.name ?? 'Клуб відсутній'
@@ -43,7 +50,7 @@ export default function HomePage() {
           <div className="hero-actions">
             <Link to="/clubs" className="link-button">Перейти до каталогу</Link>
             <Link to="/requests" className="link-button link-button-secondary">
-              Заявки
+              Мої заявки
             </Link>
           </div>
         </div>
@@ -56,6 +63,30 @@ export default function HomePage() {
       </section>
 
       <CatalogStats clubs={clubs} />
+
+      <section className="block">
+        <h2>Найближчі зустрічі</h2>
+        <ul className="meeting-list">
+          {upcoming.map((club) => {
+            const parts = meetingParts(club.nextMeeting)
+            return (
+              <li key={club.id} className="meeting-item">
+                <span className="meeting-date" aria-hidden="true">
+                  <strong>{parts.day}</strong>
+                  <span>{parts.month}</span>
+                </span>
+                <div className="meeting-info">
+                  <Link to={`/clubs/${encodeURIComponent(club.id)}`}>{club.name}</Link>
+                  <span>
+                    {optionLabel(clubFormatOptions, club.format)}
+                    {club.currentBook ? ` · ${club.currentBook}` : ' · книгу ще не обрано'}
+                  </span>
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
 
       <section className="block">
         <h2>Зараз читають</h2>

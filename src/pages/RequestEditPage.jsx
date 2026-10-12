@@ -48,6 +48,9 @@ export default function RequestEditPage({ clubs }) {
         motivation: request.motivation,
         weeklyHours: request.weeklyHours,
         wantsReminders: request.wantsReminders,
+        experience: request.experience,
+        participationFormat: request.participationFormat,
+        contactEmail: request.contactEmail,
       }}
       onSave={handleSave}
       submitLabel="Зберегти зміни"

@@ -2,7 +2,9 @@ import { requests as initialRequests } from '../data/requests.js'
 import { ServiceError } from './ServiceError.js'
 import { toRequestInput, toRequestList } from './requestContract.js'
 
-const storageKey = 'bookclub.requests.v1'
+// v2: модель заявки розширено (досвід, формат участі, пошта, дата створення).
+// Старі дані під ключем v1 не читаються й не впливають на роботу застосунку.
+export const storageKey = 'bookclub.requests.v2'
 const failures = new Set()
 
 export function failNextMockRequest(operation) {
@@ -81,7 +83,11 @@ export const mockRequestService = {
     const value = toRequestInput(input)
     await before('create')
     const records = read()
-    const record = { ...value, id: `req-${crypto.randomUUID()}` }
+    const record = {
+      ...value,
+      id: `req-${crypto.randomUUID()}`,
+      createdAt: new Date().toISOString(),
+    }
     write([...records, record])
     return { ...record }
   },
@@ -90,8 +96,8 @@ export const mockRequestService = {
     const value = toRequestInput(input)
     await before('update')
     const records = read()
-    findRecord(records, id)
-    const record = { ...value, id }
+    const current = findRecord(records, id)
+    const record = { ...value, id, createdAt: current.createdAt }
     write(records.map((entry) => (entry.id === id ? record : entry)))
     return { ...record }
   },

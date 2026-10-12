@@ -1,5 +1,12 @@
+import {
+  experienceOptions,
+  optionLabel,
+  participationOptions,
+} from '../../domain/options.js'
+
 export default function JoinSummary({ clubName, draft }) {
   const motivation = draft.motivation.trim()
+  const email = draft.contactEmail.trim()
 
   return (
     <aside className="summary-card" aria-labelledby="join-summary-title">
@@ -11,6 +18,12 @@ export default function JoinSummary({ clubName, draft }) {
         <dd>{motivation || 'Ще не вказано'}</dd>
         <dt>Годин на тиждень</dt>
         <dd>{draft.weeklyHours === '' ? 'Ще не вказано' : draft.weeklyHours}</dd>
+        <dt>Досвід читання</dt>
+        <dd>{optionLabel(experienceOptions, draft.experience, 'Ще не вказано')}</dd>
+        <dt>Формат участі</dt>
+        <dd>{optionLabel(participationOptions, draft.participationFormat, 'Ще не вказано')}</dd>
+        <dt>Контактна пошта</dt>
+        <dd>{email || 'Не вказано'}</dd>
         <dt>Нагадування про зустрічі</dt>
         <dd>
           <span className={`summary-badge ${draft.wantsReminders ? 'on' : 'off'}`}>

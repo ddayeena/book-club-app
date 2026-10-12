@@ -1,5 +1,6 @@
-import { Outlet } from 'react-router'
+import { Outlet, useLocation } from 'react-router'
 import SiteHeader from './SiteHeader.jsx'
+import ErrorBoundary from './ErrorBoundary.jsx'
 import ClubSelectionProvider from '../../providers/ClubSelectionProvider.jsx'
 import RequestsProvider from '../../providers/RequestsProvider.jsx'
 
@@ -10,6 +11,8 @@ const navigationLinks = [
 ]
 
 export default function AppLayout({ clubs }) {
+  const location = useLocation()
+
   return (
     <div className="app-shell">
       <SiteHeader title="Книжкові клуби" links={navigationLinks} />
@@ -17,7 +20,9 @@ export default function AppLayout({ clubs }) {
         <main id="main-content" tabIndex={-1}>
           <ClubSelectionProvider clubs={clubs}>
             <RequestsProvider>
-              <Outlet />
+              <ErrorBoundary resetKey={location.pathname}>
+                <Outlet />
+              </ErrorBoundary>
             </RequestsProvider>
           </ClubSelectionProvider>
         </main>
