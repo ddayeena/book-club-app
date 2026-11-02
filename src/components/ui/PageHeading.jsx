@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 export default function PageHeading({ title }) {
   useEffect(() => {
     const previousTitle = document.title
-    document.title = `${title} | Книжкові клуби`
+    document.title = `${title} | ReadHub`
 
     return () => {
       document.title = previousTitle

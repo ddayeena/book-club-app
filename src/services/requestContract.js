@@ -1,9 +1,9 @@
-import { clubs } from '../data/clubs.js'
+import { listAllClubs } from '../data/clubCatalog.js'
 import { validateRequest } from '../domain/requestValidation.js'
 import { ServiceError } from './ServiceError.js'
 
 export function toRequestInput(input) {
-  const result = validateRequest(input, clubs)
+  const result = validateRequest(input, listAllClubs())
   if (!result.ok) {
     throw new ServiceError('Перевірте поля заявки.', {
       code: 'VALIDATION',
@@ -25,6 +25,7 @@ export function toRequest(value) {
     && typeof value.experience === 'string'
     && typeof value.participationFormat === 'string'
     && typeof value.contactEmail === 'string'
+    && typeof value.ownerId === 'string'
     && typeof value.createdAt === 'string'
 
   if (!valid) {
@@ -42,6 +43,7 @@ export function toRequest(value) {
     experience: value.experience,
     participationFormat: value.participationFormat,
     contactEmail: value.contactEmail,
+    ownerId: value.ownerId,
     createdAt: value.createdAt,
   }
 }

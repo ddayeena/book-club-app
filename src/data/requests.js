@@ -8,6 +8,7 @@ export const requests = [
     experience: 'regular',
     participationFormat: 'any',
     contactEmail: 'reader@example.com',
+    ownerId: 'user-demo',
     createdAt: '2026-10-02T09:15:00.000Z',
   },
   {
@@ -19,6 +20,7 @@ export const requests = [
     experience: 'advanced',
     participationFormat: 'offline',
     contactEmail: '',
+    ownerId: 'user-demo',
     createdAt: '2026-10-05T16:40:00.000Z',
   },
   {
@@ -30,6 +32,7 @@ export const requests = [
     experience: 'beginner',
     participationFormat: 'online',
     contactEmail: 'habits@example.com',
+    ownerId: 'user-demo',
     createdAt: '2026-10-08T11:05:00.000Z',
   },
 ]

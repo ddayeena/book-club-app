@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import useRequests from '../hooks/useRequests.js'
+import useClubs from '../hooks/useClubs.js'
 import JoinPage from './JoinPage.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 
-export default function RequestEditPage({ clubs }) {
+export default function RequestEditPage() {
+  const { clubs } = useClubs()
   const { requestId } = useParams()
   const navigate = useNavigate()
   const { requests, updateRequest } = useRequests()

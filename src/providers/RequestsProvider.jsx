@@ -2,10 +2,13 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { RequestsContext } from '../context/RequestsContext.js'
 import { requestService } from '../services/requestService.js'
 import { errorMessage } from '../services/ServiceError.js'
+import useAuth from '../hooks/useAuth.js'
 
 export default function RequestsProvider({ children }) {
+  const { user } = useAuth()
   const [requests, setRequests] = useState([])
-  const [status, setStatus] = useState('loading')
+  // Гість не має заявок: читати нічого, тому стан одразу «успішний» і порожній.
+  const [status, setStatus] = useState(user ? 'loading' : 'success')
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [isMutating, setIsMutating] = useState(false)
@@ -44,13 +47,13 @@ export default function RequestsProvider({ children }) {
 
   useEffect(() => {
     mounted.current = true
-    void load()
+    if (user) void load()
     return () => {
       mounted.current = false
       activeRead.current?.abort()
       readVersion.current += 1
     }
-  }, [load])
+  }, [load, user])
 
   async function mutate(operation, apply, message) {
     if (mutationLock.current || status !== 'success') {

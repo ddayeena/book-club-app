@@ -23,3 +23,9 @@ export function optionLabel(options, value, fallback = '—') {
 export function isOption(options, value) {
   return options.some((option) => option.value === value)
 }
+
+export const languageOptions = [
+  { value: 'Українська', label: 'Українська' },
+  { value: 'Англійська', label: 'Англійська' },
+  { value: 'Українська та англійська', label: 'Українська та англійська' },
+]

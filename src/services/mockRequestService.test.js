@@ -6,9 +6,11 @@ import {
 } from './mockRequestService.js'
 import { requests as initialRequests } from '../data/requests.js'
 import { validInput } from '../test/fixtures.js'
+import { signInDemo, signInOther, signOut } from '../test/auth.js'
 
 beforeEach(() => {
   localStorage.clear()
+  signInDemo()
   vi.useFakeTimers()
 })
 
@@ -90,6 +92,48 @@ test('пошкоджені збережені дані дають зрозумі
 
   const assertion = expect(mockRequestService.getAll()).rejects.toMatchObject({
     code: 'STORAGE_READ',
+  })
+  await vi.advanceTimersByTimeAsync(700)
+  await assertion
+})
+
+test('створення записує власника з поточного сеансу, а не з полів форми', async () => {
+  const created = await finish(mockRequestService.create({
+    ...validInput, ownerId: 'user-хтось-інший',
+  }))
+
+  expect(created.ownerId).toBe('user-demo')
+})
+
+test('користувач бачить лише свої заявки й не може змінити чужі', async () => {
+  const created = await finish(mockRequestService.create(validInput))
+  signInOther()
+
+  const mine = await finish(mockRequestService.getAll())
+  expect(mine).toEqual([])
+
+  const update = expect(
+    mockRequestService.update(created.id, validInput),
+  ).rejects.toMatchObject({ code: 'NOT_FOUND' })
+  await vi.advanceTimersByTimeAsync(700)
+  await update
+
+  const remove = expect(mockRequestService.delete(created.id)).rejects.toMatchObject({
+    code: 'NOT_FOUND',
+  })
+  await vi.advanceTimersByTimeAsync(700)
+  await remove
+
+  signInDemo()
+  const stillThere = await finish(mockRequestService.getAll())
+  expect(stillThere.map((record) => record.id)).toContain(created.id)
+})
+
+test('без входу сервіс повертає UNAUTHORIZED', async () => {
+  signOut()
+
+  const assertion = expect(mockRequestService.getAll()).rejects.toMatchObject({
+    code: 'UNAUTHORIZED',
   })
   await vi.advanceTimersByTimeAsync(700)
   await assertion

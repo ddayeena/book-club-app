@@ -4,6 +4,7 @@ export function selectClubs(clubs, filters) {
     readingOnly = false,
     format = 'all',
     genre = 'all',
+    ownerId = null,
     sort = 'name',
   } = filters
   const normalizedQuery = query.trim().toLocaleLowerCase('uk')
@@ -16,6 +17,7 @@ export function selectClubs(clubs, filters) {
       && (!readingOnly || Boolean(club.currentBook))
       && (format === 'all' || club.format === format)
       && (genre === 'all' || club.genre === genre)
+      && (ownerId === null || club.ownerId === ownerId)
   })
 
   return selected.sort((a, b) => {

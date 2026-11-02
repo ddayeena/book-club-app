@@ -8,11 +8,13 @@ import RequestTable from '../components/requests/RequestTable.jsx'
 import useRequests from '../hooks/useRequests.js'
 import useRequestFilters from '../hooks/useRequestFilters.js'
 import useDeleteRequest from '../hooks/useDeleteRequest.js'
+import useClubs from '../hooks/useClubs.js'
 
-export default function RequestsPage({ clubs }) {
+export default function RequestsPage() {
+  const { clubs } = useClubs()
   const { requests, isMutating, reload } = useRequests()
   const filters = useRequestFilters(requests, clubs)
-  const deleteWithConfirmation = useDeleteRequest(clubs)
+  const deleteWithConfirmation = useDeleteRequest()
   const [error, setError] = useState('')
 
   const withReminders = requests.filter((request) => request.wantsReminders).length
@@ -30,20 +32,20 @@ export default function RequestsPage({ clubs }) {
     <>
       <PageHeading title="Заявки на приєднання" />
 
-      <div className="catalog-stats">
-        <div className="stat-card">
-          <span className="stat-number">{requests.length}</span>
-          <span className="stat-label">Усього заявок</span>
+      <dl className="stat-strip">
+        <div className="stat">
+          <dt>Усього заявок</dt>
+          <dd>{requests.length}</dd>
         </div>
-        <div className="stat-card">
-          <span className="stat-number">{withReminders}</span>
-          <span className="stat-label">З нагадуваннями</span>
+        <div className="stat">
+          <dt>З нагадуваннями</dt>
+          <dd>{withReminders}</dd>
         </div>
-        <div className="stat-card">
-          <span className="stat-number">{averageHours.toFixed(1)}</span>
-          <span className="stat-label">Годин на тиждень у середньому</span>
+        <div className="stat">
+          <dt>Годин на тиждень у середньому</dt>
+          <dd>{averageHours.toFixed(1)}</dd>
         </div>
-      </div>
+      </dl>
 
       <div className="page-toolbar">
         <Link to="/requests/new" className="link-button">Створити заявку</Link>

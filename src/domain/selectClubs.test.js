@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest'
 import { selectClubs } from './selectClubs.js'
 import { clubs } from '../data/clubs.js'
+import { ownClub } from '../test/fixtures.js'
 
 const frozen = Object.freeze(clubs.map((club) => Object.freeze({ ...club })))
 
@@ -38,4 +39,11 @@ test('не змінює вхідну колекцію', () => {
   const before = frozen.map((club) => club.id)
   selectClubs(frozen, { sort: 'members-desc' })
   expect(frozen.map((club) => club.id)).toEqual(before)
+})
+test('фільтр за власником показує лише клуби цього користувача', () => {
+  const withOwner = [...frozen, ownClub]
+
+  expect(selectClubs(withOwner, { ownerId: 'user-demo' }).map((club) => club.id))
+    .toEqual(['club-own-1'])
+  expect(selectClubs(withOwner, { ownerId: 'user-ніхто' })).toEqual([])
 })

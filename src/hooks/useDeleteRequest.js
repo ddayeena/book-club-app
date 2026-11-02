@@ -1,7 +1,9 @@
 import useRequests from './useRequests.js'
+import useClubs from './useClubs.js'
 
-export default function useDeleteRequest(clubs) {
+export default function useDeleteRequest() {
   const { deleteRequest } = useRequests()
+  const { clubs } = useClubs()
 
   return async function deleteWithConfirmation(request) {
     const club = clubs.find((entry) => entry.id === request.clubId)

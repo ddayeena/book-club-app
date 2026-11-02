@@ -4,6 +4,7 @@ import PageHeading from '../components/ui/PageHeading.jsx'
 import AppButton from '../components/ui/AppButton.jsx'
 import useRequests from '../hooks/useRequests.js'
 import useDeleteRequest from '../hooks/useDeleteRequest.js'
+import useClubs from '../hooks/useClubs.js'
 import {
   experienceOptions,
   optionLabel,
@@ -12,11 +13,12 @@ import {
 import { formatCreatedAt } from '../domain/dates.js'
 import NotFoundPage from './NotFoundPage.jsx'
 
-export default function RequestDetailsPage({ clubs }) {
+export default function RequestDetailsPage() {
+  const { clubs } = useClubs()
   const { requestId } = useParams()
   const navigate = useNavigate()
   const { requests, isMutating } = useRequests()
-  const deleteWithConfirmation = useDeleteRequest(clubs)
+  const deleteWithConfirmation = useDeleteRequest()
   const [error, setError] = useState('')
   const pageAlive = useRef(false)
 

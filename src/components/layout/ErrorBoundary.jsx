@@ -18,7 +18,7 @@ export default class ErrorBoundary extends Component {
 
     return (
       <section className="state-banner state-error" role="alert">
-        <span className="state-icon" aria-hidden="true">🛠️</span>
+        <span className="state-mark" aria-hidden="true">!</span>
         <h2>Щось пішло не так на цій сторінці</h2>
         <p>Спробуйте оновити сторінку або перейдіть до іншого розділу.</p>
         <button

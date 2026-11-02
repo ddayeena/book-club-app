@@ -10,6 +10,8 @@ export const clubs = [
     language: 'Українська',
     meetingsPerMonth: 2,
     nextMeeting: '2026-11-08',
+    ownerId: null,
+    ownerName: null,
   },
   {
     id: 'club-002',
@@ -22,6 +24,8 @@ export const clubs = [
     language: 'Українська',
     meetingsPerMonth: 1,
     nextMeeting: '2026-11-14',
+    ownerId: null,
+    ownerName: null,
   },
   {
     id: 'club-003',
@@ -34,6 +38,8 @@ export const clubs = [
     language: 'Українська',
     meetingsPerMonth: 4,
     nextMeeting: '2026-10-25',
+    ownerId: null,
+    ownerName: null,
   },
   {
     id: 'club-004',
@@ -46,6 +52,8 @@ export const clubs = [
     language: 'Українська та англійська',
     meetingsPerMonth: 2,
     nextMeeting: '2026-10-30',
+    ownerId: null,
+    ownerName: null,
   },
   {
     id: 'club-005',
@@ -58,6 +66,8 @@ export const clubs = [
     language: 'Українська',
     meetingsPerMonth: 3,
     nextMeeting: '2026-11-02',
+    ownerId: null,
+    ownerName: null,
   },
   {
     id: 'club-006',
@@ -70,5 +80,7 @@ export const clubs = [
     language: 'Українська',
     meetingsPerMonth: 1,
     nextMeeting: '2026-11-21',
+    ownerId: null,
+    ownerName: null,
   },
 ]

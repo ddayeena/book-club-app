@@ -53,6 +53,7 @@ test.each([
   { label: 'неправильна оболонка', body: { items: [] } },
   { label: 'тип тривалості', body: [{ ...savedRequest, weeklyHours: 'two' }] },
   { label: 'відсутній досвід читання', body: [{ ...savedRequest, experience: undefined }] },
+  { label: 'відсутній власник', body: [{ ...savedRequest, ownerId: undefined }] },
   { label: 'відсутня дата створення', body: [{ ...savedRequest, createdAt: undefined }] },
   { label: 'повторний id', body: [savedRequest, { ...savedRequest }] },
 ])('відхиляє несумісну структуру: $label', async ({ body }) => {

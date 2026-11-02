@@ -4,10 +4,12 @@ import PageHeading from '../components/ui/PageHeading.jsx'
 import EmptyState from '../components/ui/EmptyState.jsx'
 import useClubSelection from '../hooks/useClubSelection.js'
 import useRequests from '../hooks/useRequests.js'
+import useClubs from '../hooks/useClubs.js'
 import JoinPage from './JoinPage.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 
-export default function RequestCreatePage({ clubs }) {
+export default function RequestCreatePage() {
+  const { clubs } = useClubs()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { selectedId, clearSelection } = useClubSelection()

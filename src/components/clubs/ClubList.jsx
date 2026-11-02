@@ -5,6 +5,7 @@ export default function ClubList({
   clubs,
   selectedId,
   onSelect,
+  currentUserId = null,
   emptyTitle = 'Клубів ще не додано.',
 }) {
   if (clubs.length === 0) {
@@ -12,13 +13,14 @@ export default function ClubList({
   }
 
   return (
-    <ul className="club-grid">
+    <ul className="club-list">
       {clubs.map((club) => (
         <li key={club.id}>
           <ClubCard
             club={club}
             selected={club.id === selectedId}
             onSelect={onSelect}
+            isOwn={currentUserId !== null && club.ownerId === currentUserId}
           />
         </li>
       ))}

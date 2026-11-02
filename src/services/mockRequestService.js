@@ -1,10 +1,10 @@
 import { requests as initialRequests } from '../data/requests.js'
 import { ServiceError } from './ServiceError.js'
 import { toRequestInput, toRequestList } from './requestContract.js'
+import { currentUserId } from './authService.js'
 
-// v2: модель заявки розширено (досвід, формат участі, пошта, дата створення).
-// Старі дані під ключем v1 не читаються й не впливають на роботу застосунку.
-export const storageKey = 'bookclub.requests.v2'
+// v3: кожна заявка має власника (ownerId). Старі дані (v1, v2) не читаються.
+export const storageKey = 'bookclub.requests.v3'
 const failures = new Set()
 
 export function failNextMockRequest(operation) {
@@ -62,8 +62,18 @@ function write(records) {
   }
 }
 
-function findRecord(records, id) {
-  const record = records.find((entry) => entry.id === id)
+// Як і справжній сервер, імітація визначає користувача за сеансом, а не за полями форми.
+function requireUser() {
+  const id = currentUserId()
+  if (!id) {
+    throw new ServiceError('Увійдіть, щоб працювати із заявками.', { code: 'UNAUTHORIZED' })
+  }
+  return id
+}
+
+// Чужа заявка для користувача виглядає як відсутня: наявність запису не розкривається.
+function findOwned(records, id, userId) {
+  const record = records.find((entry) => entry.id === id && entry.ownerId === userId)
   if (!record) throw new ServiceError('Заявку не знайдено.', { code: 'NOT_FOUND' })
   return record
 }
@@ -71,21 +81,24 @@ function findRecord(records, id) {
 export const mockRequestService = {
   async getAll({ signal } = {}) {
     await before('getAll', signal)
-    return read()
+    const userId = requireUser()
+    return read().filter((record) => record.ownerId === userId)
   },
 
   async getById(id, { signal } = {}) {
     await before('getById', signal)
-    return findRecord(read(), id)
+    return findOwned(read(), id, requireUser())
   },
 
   async create(input) {
     const value = toRequestInput(input)
     await before('create')
+    const userId = requireUser()
     const records = read()
     const record = {
       ...value,
       id: `req-${crypto.randomUUID()}`,
+      ownerId: userId,
       createdAt: new Date().toISOString(),
     }
     write([...records, record])
@@ -95,17 +108,24 @@ export const mockRequestService = {
   async update(id, input) {
     const value = toRequestInput(input)
     await before('update')
+    const userId = requireUser()
     const records = read()
-    const current = findRecord(records, id)
-    const record = { ...value, id, createdAt: current.createdAt }
+    const current = findOwned(records, id, userId)
+    const record = {
+      ...value,
+      id,
+      ownerId: current.ownerId,
+      createdAt: current.createdAt,
+    }
     write(records.map((entry) => (entry.id === id ? record : entry)))
     return { ...record }
   },
 
   async delete(id) {
     await before('delete')
+    const userId = requireUser()
     const records = read()
-    findRecord(records, id)
+    findOwned(records, id, userId)
     write(records.filter((entry) => entry.id !== id))
   },
 }
