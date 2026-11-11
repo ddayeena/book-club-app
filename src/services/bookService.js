@@ -12,7 +12,13 @@ export const bookService = {
   async getAll(clubId, { signal } = {}) {
     let query = getSupabase().from('club_books').select('*').eq('club_id', clubId).order('created_at')
     if (signal) query = query.abortSignal(signal)
-    return (await unwrap(query)).map(mapBook)
+    let annotations = getSupabase().rpc('get_club_book_flags', { p_club: clubId })
+    if (signal) annotations = annotations.abortSignal(signal)
+    const [rows, flags] = await Promise.all([unwrap(query), unwrap(annotations)])
+    const byId = new Map(flags.map((f) => [f.book_id, f]))
+    return rows.map((row) => ({ ...mapBook(row),
+      isPollLocked: Boolean(byId.get(row.id)?.is_poll_locked),
+      isNextSelected: Boolean(byId.get(row.id)?.is_next_selected) }))
   },
   async save(clubId, draft, book = null) {
     const result = validateBook(draft, Boolean(book?.isMigrated))

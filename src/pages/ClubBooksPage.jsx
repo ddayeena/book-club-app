@@ -43,6 +43,7 @@ function Bookshelf({ club }) {
   }, [club.id, attempt])
   function refresh() {
     if (lock.current) return
+    setEditor(null); setReplacement(null)
     setError(''); setStatus('loading'); setAttempt((n) => n + 1)
   }
   async function run(operation, message) {
@@ -63,7 +64,7 @@ function Bookshelf({ club }) {
     finally { lock.current = false; if (alive.current) setBusy(false) }
   }
   function start(book) {
-    if (lock.current) return
+    if (lock.current || book.isPollLocked) return
     const previous = books.find((entry) => entry.status === 'current')
     if (previous) { setPreviousAction(''); setReplacement({ book, previous }); return }
     if (window.confirm(`Почати читання «${book.title}»?`))
@@ -88,6 +89,7 @@ function Bookshelf({ club }) {
     {notice && <p role="status" className="flash">{notice}</p>}
     {error && <p role="alert" className="form-alert">{error}</p>}
     <div className="page-toolbar">
+      {user && <Link to={`/clubs/${club.id}/polls`} className="link-button link-button-secondary">Голосування за книги</Link>}
       {canManage && <AppButton disabled={busy || status !== 'success'} onClick={() => { setEditor({ book: null }); setReplacement(null); setError('') }}>Додати книгу</AppButton>}
       <AppButton variant="secondary" disabled={busy} onClick={refresh}>Оновити полицю</AppButton>
     </div>

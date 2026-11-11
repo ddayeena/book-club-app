@@ -37,3 +37,11 @@ test('помилка сервера не створює локального fal
   response = { data: null, error: { code: '42501' } }
   await expect(bookService.complete('b')).rejects.toMatchObject({ code: '42501' })
 })
+test('merges server voting annotations by book id and propagates annotation errors', async () => {
+  response.data = [row]
+  client.rpc.mockResolvedValueOnce({ data: [{ book_id: 'b', is_poll_locked: true, is_next_selected: true }], error: null })
+  expect(await bookService.getAll('c')).toMatchObject([{ id: 'b', isPollLocked: true, isNextSelected: true }])
+  expect(client.rpc).toHaveBeenCalledWith('get_club_book_flags', { p_club: 'c' })
+  client.rpc.mockResolvedValueOnce({ data: null, error: { code: '42501' } })
+  await expect(bookService.getAll('c')).rejects.toMatchObject({ code: '42501' })
+})

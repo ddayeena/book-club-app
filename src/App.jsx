@@ -16,6 +16,8 @@ import NotFoundPage from './pages/NotFoundPage.jsx'
 import ClubMembersPage from './pages/ClubMembersPage.jsx'
 import ClubRequestsPage from './pages/ClubRequestsPage.jsx'
 import ClubBooksPage from './pages/ClubBooksPage.jsx'
+import ClubPollsPage from './pages/ClubPollsPage.jsx'
+import ClubPollPage from './pages/ClubPollPage.jsx'
 
 export default function App() {
   return (
@@ -33,6 +35,8 @@ export default function App() {
             <Route path=":clubId/edit" element={<ClubEditorPage />} />
             <Route path=":clubId/members" element={<ClubMembersPage />} />
             <Route path=":clubId/requests" element={<ClubRequestsPage />} />
+            <Route path=":clubId/polls" element={<ClubPollsPage />} />
+            <Route path=":clubId/polls/:pollId" element={<ClubPollPage />} />
           </Route>
           <Route path=":clubId" element={<ClubDetailsPage />} />
           <Route path=":clubId/books" element={<ClubBooksPage />} />

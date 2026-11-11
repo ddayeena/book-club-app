@@ -46,7 +46,9 @@ Docker для розробки: `docker compose build`, `docker compose run --rm
 - Скасування заявки й архівування клубу зберігають історію. Членство створює тільки сервер.
 - Системні notifications записуються при поданні заявки та рішенні; окремого інтерфейсу ще немає.
 - club_books зберігає заплановані, поточну та прочитані книги; каталог отримує похідну назву поточної книги.
-- Книжкова полиця доступна на `/clubs/:clubId/books`; голосування ще не реалізовано.
+- Книжкова полиця доступна на `/clubs/:clubId/books`; голосування — `/clubs/:clubId/polls` і `/clubs/:clubId/polls/:pollId`.
+- book_polls, book_poll_options і book_votes зберігають голосування, незмінні варіанти та один змінюваний голос учасника.
+- Переможець залишається planned; позначка наступної книги зникає після початку читання. Архівування скасовує незавершене голосування.
 
 Production та dev використовують Supabase незалежно від старого VITE_DATA_SOURCE.
 Mock залишено для автоматичних тестів; відмова Supabase не підставляє локальні дані.
@@ -57,7 +59,8 @@ Mock залишено для автоматичних тестів; відмов
 - [Supabase Auth: міграції, ручні дії, обмеження](docs/supabase-auth-setup.md).
 - [Клуби, заявки, учасники: налаштування й перевірки](docs/supabase-clubs-setup.md).
 - [Книжкова полиця: міграція 005 та перевірки](docs/supabase-books-setup.md).
-- `supabase/tests/auth_rls.test.sql`, `club_lifecycle.test.sql`, `club_books.test.sql` — pgTAP-тести для одноразової тестової БД.
+- [Голосування: міграція 006, права та перевірки](docs/supabase-polls-setup.md).
+- `supabase/tests/auth_rls.test.sql`, `club_lifecycle.test.sql`, `club_books.test.sql`, `book_polls.test.sql` — pgTAP-тести для одноразової тестової БД.
 - `src/services/supabaseAuthService.test.js`, `src/providers/AuthProvider.test.jsx` — новий Auth.
 - `src/services/localAuthIsolation.test.js` — ізоляція локальних заявок.
 - Старі навчальні Auth-сценарії збережено через test-only адаптер; production його не імпортує.

@@ -652,6 +652,8 @@ button[aria-pressed="true"].app-button { background: #141b2b; color: #ffffff; bo
 .book-card { height: 100%; display: flex; gap: 1.1rem; padding: 1.25rem; border: 1px solid #ddd4c9; border-radius: 10px; background: #fffdf8; box-shadow: 0 3px 10px #351d2410; }
 .book-card-current { border-top: 4px solid #752a3b; }
 .book-card-body { min-width: 0; flex: 1; }
+.book-badges { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.4rem 0.75rem; }
+.book-badges .book-status { max-width: 100%; overflow-wrap: anywhere; }
 .book-card h2 { font-size: 1.35rem; margin-block: 0.6rem 0.4rem; overflow-wrap: anywhere; }
 .book-cover { width: 7rem; height: 10rem; flex: 0 0 7rem; object-fit: cover; border-radius: 3px 8px 8px 3px; background: #e9dfd1; }
 .book-cover-placeholder { display: grid; place-items: center; border-left: 6px solid #54202e; background: #752a3b; color: #f8ead7; font: italic 1.5rem Georgia, serif; }
@@ -664,3 +666,12 @@ button[aria-pressed="true"].app-button { background: #141b2b; color: #ffffff; bo
   .book-card { flex-direction: column; }
   .book-cover { flex-basis: auto; }
 }
+/* Book voting shares the bookshelf palette and form controls. */
+.poll-list, .poll-result-list { list-style: none; padding: 0; display: grid; gap: 1rem; }
+.poll-results { background: #fffaf3; border: 1px solid #e4d7c7; border-radius: 1rem; padding: clamp(1rem, 3vw, 2rem); margin-block: 1rem; }
+.poll-result-list li { padding-block: .75rem; border-bottom: 1px solid #e4d7c7; overflow-wrap: anywhere; }
+.poll-result-list progress { width: 100%; height: .8rem; accent-color: #752a3b; }
+.poll-options { border: 1px solid #e4d7c7; border-radius: .75rem; padding: 1rem; margin-block: 1rem; min-width: 0; }
+.poll-options .checkbox-field { align-items: start; overflow-wrap: anywhere; margin-block: .75rem; }
+.poll-options input { flex-shrink: 0; accent-color: #752a3b; }
+.poll-status { margin-block: 1rem; }
