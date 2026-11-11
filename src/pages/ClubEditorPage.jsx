@@ -12,7 +12,6 @@ const emptyDraft = {
   name: '',
   genre: '',
   description: '',
-  currentBook: '',
   format: 'online',
   language: 'Українська',
   meetingsPerMonth: '2',
@@ -27,7 +26,6 @@ function toDraft(club) {
     name: club.name,
     genre: club.genre,
     description: club.description,
-    currentBook: club.currentBook ?? '',
     format: club.format,
     language: club.language,
     meetingsPerMonth: String(club.meetingsPerMonth),
@@ -125,7 +123,7 @@ function ClubEditor({ club }) {
           submitLabel={editing ? 'Зберегти зміни' : 'Створити клуб'}
           isSubmitting={isMutating}
         />
-        <ClubPreview draft={draft} />
+        <ClubPreview draft={{ ...draft, currentBook: club?.currentBook ?? '' }} />
       </div>
     </>
   )

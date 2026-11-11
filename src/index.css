@@ -645,3 +645,22 @@ button[aria-pressed="true"].app-button { background: #141b2b; color: #ffffff; bo
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* Книжкова полиця */
+.book-filters { margin-block: 1rem 1.5rem; }
+.book-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); gap: 1.25rem; }
+.book-card { height: 100%; display: flex; gap: 1.1rem; padding: 1.25rem; border: 1px solid #ddd4c9; border-radius: 10px; background: #fffdf8; box-shadow: 0 3px 10px #351d2410; }
+.book-card-current { border-top: 4px solid #752a3b; }
+.book-card-body { min-width: 0; flex: 1; }
+.book-card h2 { font-size: 1.35rem; margin-block: 0.6rem 0.4rem; overflow-wrap: anywhere; }
+.book-cover { width: 7rem; height: 10rem; flex: 0 0 7rem; object-fit: cover; border-radius: 3px 8px 8px 3px; background: #e9dfd1; }
+.book-cover-placeholder { display: grid; place-items: center; border-left: 6px solid #54202e; background: #752a3b; color: #f8ead7; font: italic 1.5rem Georgia, serif; }
+.book-status { display: inline-block; font-size: 0.8rem; font-weight: 700; color: #752a3b; border-bottom: 1px solid #d4b9b6; }
+.book-author { color: #62545a; }
+.book-description { white-space: pre-wrap; overflow-wrap: anywhere; }
+.book-editor, .book-replacement { max-width: 46rem; margin-block: 1.5rem; padding: 1.5rem; border: 1px solid #d4b9b6; border-radius: 10px; background: #fffdf8; }
+.book-editor h2, .book-replacement h2 { margin-bottom: 1rem; }
+@media (max-width: 480px) {
+  .book-card { flex-direction: column; }
+  .book-cover { flex-basis: auto; }
+}

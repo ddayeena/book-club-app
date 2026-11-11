@@ -15,6 +15,7 @@ import RequestEditPage from './pages/RequestEditPage.jsx'
 import NotFoundPage from './pages/NotFoundPage.jsx'
 import ClubMembersPage from './pages/ClubMembersPage.jsx'
 import ClubRequestsPage from './pages/ClubRequestsPage.jsx'
+import ClubBooksPage from './pages/ClubBooksPage.jsx'
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
             <Route path=":clubId/requests" element={<ClubRequestsPage />} />
           </Route>
           <Route path=":clubId" element={<ClubDetailsPage />} />
+          <Route path=":clubId/books" element={<ClubBooksPage />} />
         </Route>
 
         <Route element={<RequireAuth />}>

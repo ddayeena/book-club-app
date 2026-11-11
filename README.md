@@ -8,7 +8,8 @@ React-застосунок: каталог, власні клуби та зая�
 
 Дотримуйтесь [інструкції налаштування Auth](docs/supabase-auth-setup.md).
 Потім виконайте [інструкцію другого етапу](docs/supabase-clubs-setup.md).
-Перевірте й самостійно застосуйте версійні міграції в тестовому Supabase у порядку 001–004.
+Для книжкової полиці виконайте також [інструкцію 3А](docs/supabase-books-setup.md).
+Перевірте й самостійно застосуйте версійні міграції в тестовому Supabase у порядку 001–005.
 Уже застосовані міграції повторювати не потрібно.
 Створіть `.env.local` за `.env.example`: URL проєкту та publishable key.
 Залиште підтвердження email увімкненим. Без конфігурації застосунок показує
@@ -44,6 +45,8 @@ Docker для розробки: `docker compose build`, `docker compose run --rm
 - Власник автоматично стає учасником; заявки мають pending/approved/rejected/cancelled.
 - Скасування заявки й архівування клубу зберігають історію. Членство створює тільки сервер.
 - Системні notifications записуються при поданні заявки та рішенні; окремого інтерфейсу ще немає.
+- club_books зберігає заплановані, поточну та прочитані книги; каталог отримує похідну назву поточної книги.
+- Книжкова полиця доступна на `/clubs/:clubId/books`; голосування ще не реалізовано.
 
 Production та dev використовують Supabase незалежно від старого VITE_DATA_SOURCE.
 Mock залишено для автоматичних тестів; відмова Supabase не підставляє локальні дані.
@@ -53,7 +56,8 @@ Mock залишено для автоматичних тестів; відмов
 
 - [Supabase Auth: міграції, ручні дії, обмеження](docs/supabase-auth-setup.md).
 - [Клуби, заявки, учасники: налаштування й перевірки](docs/supabase-clubs-setup.md).
-- `supabase/tests/auth_rls.test.sql`, `club_lifecycle.test.sql` — pgTAP-тести для одноразової тестової БД.
+- [Книжкова полиця: міграція 005 та перевірки](docs/supabase-books-setup.md).
+- `supabase/tests/auth_rls.test.sql`, `club_lifecycle.test.sql`, `club_books.test.sql` — pgTAP-тести для одноразової тестової БД.
 - `src/services/supabaseAuthService.test.js`, `src/providers/AuthProvider.test.jsx` — новий Auth.
 - `src/services/localAuthIsolation.test.js` — ізоляція локальних заявок.
 - Старі навчальні Auth-сценарії збережено через test-only адаптер; production його не імпортує.

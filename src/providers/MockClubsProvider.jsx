@@ -47,7 +47,7 @@ export default function MockClubsProvider({ children }) {
       return { ok: false, message: 'Редагувати клуб може лише його власник.' }
     }
 
-    const validation = validateClub(input)
+    const validation = validateClub({ ...input, currentBook: current.currentBook })
     if (!validation.ok) return validation
 
     const club = { ...current, ...validation.value }

@@ -10,7 +10,6 @@ export default function ClubForm({
     name: `${idPrefix}-name`,
     genre: `${idPrefix}-genre`,
     description: `${idPrefix}-description`,
-    book: `${idPrefix}-book`,
     format: `${idPrefix}-format`,
     language: `${idPrefix}-language`,
     meetings: `${idPrefix}-meetings`,
@@ -64,14 +63,7 @@ export default function ClubForm({
           </datalist>
         </FormField>
 
-        <FormField
-          id={ids.book}
-          label="Поточна книга"
-          hint="Необов'язково. Можна додати пізніше."
-          error={errors.currentBook}
-        >
-          <input type="text" {...bind('currentBook', ids.book)} />
-        </FormField>
+        <p className="field-hint">Книги додаються та редагуються на книжковій полиці після створення клубу.</p>
       </div>
 
       <FormField

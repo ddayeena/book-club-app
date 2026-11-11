@@ -12,7 +12,7 @@ export async function unwrap(query) {
 }
 export function mapClub(c) {
   return { id: c.id, ownerId: c.owner_id, ownerName: c.owner_name, name: c.name, genre: c.genre,
-    description: c.description, currentBook: c.current_book, nextMeeting: c.next_meeting,
+    description: c.description, currentBook: c.current_book ?? null, nextMeeting: c.next_meeting,
     format: c.format, language: c.language, meetingsPerMonth: c.meetings_per_month,
     membersCount: Number(c.members_count ?? 1), archivedAt: c.archived_at, isMember: c.is_member ?? false }
 }
@@ -20,7 +20,7 @@ function input(values) {
   const result = validateClub(values)
   if (!result.ok) throw new ServiceError('Перевірте поля клубу.', { code: 'VALIDATION', errors: result.errors })
   const v = result.value
-  return { name: v.name, genre: v.genre, description: v.description, current_book: v.currentBook,
+  return { name: v.name, genre: v.genre, description: v.description,
     format: v.format, language: v.language, meetings_per_month: v.meetingsPerMonth, next_meeting: v.nextMeeting }
 }
 export const clubService = {

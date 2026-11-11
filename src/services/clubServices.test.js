@@ -34,7 +34,8 @@ test('створення клубу не передає ID власника та
   const args = client.rpc.mock.calls[0][1].p_input
   expect(args).not.toHaveProperty('owner_id')
   expect(args).not.toHaveProperty('members_count')
-  expect(args).toMatchObject({ name: ownClub.name, current_book: null })
+  expect(args).toMatchObject({ name: ownClub.name })
+  expect(args).not.toHaveProperty('current_book')
 })
 test('архівування викликає RPC, не фізичне видалення', async () => {
   await clubService.archive('remote-club')
@@ -44,6 +45,16 @@ test('архівування викликає RPC, не фізичне вида�
 test('порожня дата передається в RPC як NULL', async () => {
   await clubService.create({ ...ownClub, nextMeeting: '' })
   expect(client.rpc.mock.calls[0][1].p_input.next_meeting).toBeNull()
+})
+
+test('каталог зберігає currentBook із похідного поля RPC після перенесення', async () => {
+  response.data = [{ ...row, current_book: 'Стара збережена назва' }]
+  expect(await clubService.getAll()).toMatchObject([{ currentBook: 'Стара збережена назва' }])
+})
+
+test('редагування клубу не переписує книгу, перенесену на полицю', async () => {
+  await clubService.update('remote-club', { ...ownClub, currentBook: 'Стара збережена назва' })
+  expect(client.rpc.mock.calls[0][1].p_input).not.toHaveProperty('current_book')
 })
 test('мої заявки завжди мають явний фільтр автора', async () => {
   response.data = [request]

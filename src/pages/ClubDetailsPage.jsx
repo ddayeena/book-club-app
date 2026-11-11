@@ -136,6 +136,7 @@ export default function ClubDetailsPage() {
           </dl>
 
           <div className="club-actions">
+            <Link to={`/clubs/${club.id}/books`} className="link-button link-button-secondary">Книжкова полиця</Link>
             {isSupabaseData && user && <>
               {club.isMember && <p className="selection-note">Ви учасник клубу.</p>}
               <LeaveClubButton key={club.id + user.id} club={club} disabled={isMutating} />
