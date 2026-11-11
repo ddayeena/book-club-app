@@ -32,7 +32,11 @@ function pause(signal) {
 }
 
 async function before(operation, signal) {
+  const actor = requireUser()
   await pause(signal)
+  if (currentUserId() !== actor) {
+    throw new ServiceError('Сеанс змінився. Повторіть дію.', { code: 'UNAUTHORIZED' })
+  }
   if (failures.delete(operation)) {
     throw new ServiceError('Навчальна відмова сервісу. Повторіть дію.', {
       code: 'MOCK_FAILURE',

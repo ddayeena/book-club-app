@@ -29,12 +29,13 @@ const steps = [
 export default function HomePage() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { clubs } = useClubs()
+  const { clubs: allClubs } = useClubs()
+  const clubs = allClubs.filter((club) => !club.archivedAt)
   const { requests, status } = useRequests()
   const [query, setQuery] = useState('')
 
   const readingNow = clubs.filter((club) => club.currentBook)
-  const upcoming = [...clubs]
+  const upcoming = clubs.filter((club) => club.nextMeeting)
     .sort((a, b) => a.nextMeeting.localeCompare(b.nextMeeting))
     .slice(0, 4)
   const popular = [...clubs]
@@ -45,7 +46,7 @@ export default function HomePage() {
     .slice(0, 3)
 
   function clubName(id) {
-    return clubs.find((club) => club.id === id)?.name ?? 'Клуб видалено'
+    return allClubs.find((club) => club.id === id)?.name ?? 'Клуб недоступний'
   }
 
   function handleSearch(event) {
@@ -112,6 +113,7 @@ export default function HomePage() {
       )}
 
       <Block number="01" title="Найближчі зустрічі">
+        {upcoming.length === 0 && <p className="muted">Дати зустрічей ще не визначено.</p>}
         <ol className="timeline">
           {upcoming.map((club) => {
             const parts = meetingParts(club.nextMeeting)

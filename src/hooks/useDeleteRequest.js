@@ -9,8 +9,8 @@ export default function useDeleteRequest() {
     const club = clubs.find((entry) => entry.id === request.clubId)
     const name = club?.name ?? request.clubId
     const confirmed = window.confirm(
-      `Видалити заявку ${request.id} до клубу «${name}»? `
-      + 'Запис буде вилучено з поточної колекції. Скасування видалення не передбачено.',
+      request.status ? `Скасувати заявку до клубу «${name}»? Історія збережеться.` :
+      `Видалити заявку ${request.id} до клубу «${name}»? Запис буде вилучено з поточної колекції.`,
     )
     if (!confirmed) return { ok: false, cancelled: true }
     return deleteRequest(request.id)

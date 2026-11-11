@@ -57,9 +57,7 @@ export function validateClub(input) {
     errors.meetingsPerMonth = 'Кількість зустрічей має бути цілим числом від 1 до 8.'
   }
 
-  if (nextMeeting === '') {
-    errors.nextMeeting = 'Вкажіть дату найближчої зустрічі.'
-  } else if (!isRealDate(nextMeeting)) {
+  if (nextMeeting !== '' && !isRealDate(nextMeeting)) {
     errors.nextMeeting = 'Вкажіть коректну дату.'
   }
 
@@ -76,7 +74,7 @@ export function validateClub(input) {
       format: input.format,
       language: input.language,
       meetingsPerMonth,
-      nextMeeting,
+      nextMeeting: nextMeeting === '' ? null : nextMeeting,
     },
   }
 }

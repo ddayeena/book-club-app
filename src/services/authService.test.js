@@ -9,7 +9,7 @@ import {
   register,
   sessionKey,
   usersKey,
-} from './authService.js'
+} from '../test/legacyAuthService.js'
 
 beforeEach(() => {
   localStorage.clear()

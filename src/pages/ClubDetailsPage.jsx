@@ -10,13 +10,15 @@ import { clubFormatOptions, optionLabel } from '../domain/options.js'
 import { formatMeetingDate, meetingParts } from '../domain/dates.js'
 import { genreColor } from '../domain/genreColor.js'
 import NotFoundPage from './NotFoundPage.jsx'
+import { isSupabaseData } from '../services/dataSource.js'
+import LeaveClubButton from '../components/clubs/LeaveClubButton.jsx'
 
 export default function ClubDetailsPage() {
   const { clubId } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
   const { user } = useAuth()
-  const { clubs, deleteClub } = useClubs()
+  const { clubs, deleteClub, isMutating, reload } = useClubs()
   const { selectClub } = useClubSelection()
   const { requests, status } = useRequests()
   const club = clubs.find((entry) => entry.id === clubId)
@@ -32,6 +34,7 @@ export default function ClubDetailsPage() {
 
   const color = genreColor(club.genre)
   const isOwner = Boolean(user) && club.ownerId === user.id
+  const canManage = isOwner || user?.role === 'admin'
   const requestCount = user && status === 'success'
     ? requests.filter((request) => request.clubId === club.id).length
     : null
@@ -44,16 +47,16 @@ export default function ClubDetailsPage() {
     navigate(`/requests/new?${search}`)
   }
 
-  function handleDelete() {
+  async function handleDelete() {
     const extra = requestCount
       ? ` Ваші заявки (${requestCount}) залишаться в списку з позначкою про відсутній клуб.`
       : ''
-    if (!window.confirm(`Видалити клуб «${club.name}»?${extra} Скасувати видалення буде неможливо.`)) {
+    if (!window.confirm(isSupabaseData ? `Архівувати клуб «${club.name}»? Очікувані заявки буде відхилено, історія збережеться.` : `Видалити клуб «${club.name}»?${extra} Скасувати видалення буде неможливо.`)) {
       return
     }
-    const result = deleteClub(club.id)
+    const result = await deleteClub(club.id)
     if (result.ok) {
-      navigate('/clubs', { replace: true, state: { notice: 'Клуб видалено.' } })
+      navigate('/clubs', { replace: true, state: { notice: isSupabaseData ? 'Клуб архівовано.' : 'Клуб видалено.' } })
     } else {
       window.alert(result.message)
     }
@@ -77,6 +80,7 @@ export default function ClubDetailsPage() {
       </p>
 
       {notice && <p role="status" className="flash">{notice}</p>}
+      {club.archivedAt && <p className="flash">Клуб архівовано.</p>}
 
       <header className="club-masthead" style={{ borderLeftColor: color.spine }}>
         <div className="club-row-tags">
@@ -132,19 +136,26 @@ export default function ClubDetailsPage() {
           </dl>
 
           <div className="club-actions">
-            <AppButton onClick={handlePrepareRequest}>
+            {isSupabaseData && user && <>
+              {club.isMember && <p className="selection-note">Ви учасник клубу.</p>}
+              <LeaveClubButton key={club.id + user.id} club={club} disabled={isMutating} />
+              <AppButton variant="secondary" disabled={isMutating} onClick={() => void reload(true)}>Оновити дані клубу</AppButton>
+            </>}
+            <AppButton onClick={handlePrepareRequest} disabled={Boolean(club.archivedAt || club.isMember)}>
               Обрати й підготувати заявку
             </AppButton>
             {!user && (
               <p className="field-hint">Для заявки потрібно увійти в обліковий запис.</p>
             )}
-            {isOwner && (
+            {isSupabaseData && (club.isMember || canManage) && <Link to={`/clubs/${club.id}/members`} className="link-inline">Учасники клубу</Link>}
+            {isSupabaseData && canManage && <Link to={`/clubs/${club.id}/requests`} className="link-inline">Вхідні заявки</Link>}
+            {canManage && !club.archivedAt && (
               <>
                 <Link to={`/clubs/${encodeURIComponent(club.id)}/edit`} className="link-button link-button-secondary">
                   Редагувати клуб
                 </Link>
-                <AppButton variant="danger" onClick={handleDelete}>
-                  Видалити клуб
+                <AppButton variant="danger" onClick={handleDelete} disabled={isMutating}>
+                  {isSupabaseData ? 'Архівувати клуб' : 'Видалити клуб'}
                 </AppButton>
               </>
             )}

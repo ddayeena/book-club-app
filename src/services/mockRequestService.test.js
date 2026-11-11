@@ -8,6 +8,8 @@ import { requests as initialRequests } from '../data/requests.js'
 import { validInput } from '../test/fixtures.js'
 import { signInDemo, signInOther, signOut } from '../test/auth.js'
 
+vi.mock('./authService.js', () => import('../test/legacyAuthService.js'))
+
 beforeEach(() => {
   localStorage.clear()
   signInDemo()
@@ -137,4 +139,18 @@ test('без входу сервіс повертає UNAUTHORIZED', async () =>
   })
   await vi.advanceTimersByTimeAsync(700)
   await assertion
+})
+
+test('зміна користувача під час збереження не записує заявку іншій особі', async () => {
+  const before = localStorage.getItem(storageKey)
+  const assertion = expect(mockRequestService.create(validInput)).rejects.toMatchObject({ code: 'UNAUTHORIZED' })
+  signInOther()
+  await vi.advanceTimersByTimeAsync(700)
+  await assertion
+  expect(localStorage.getItem(storageKey)).toBe(before)
+})
+
+test('новий Auth UUID не отримує старі демо-заявки', async () => {
+  signInOther()
+  expect(await finish(mockRequestService.getAll())).toEqual([])
 })

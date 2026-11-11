@@ -30,6 +30,7 @@ export default function RequestEditPage() {
 
   const club = clubs.find((entry) => entry.id === request.clubId)
   if (!club) return <NotFoundPage title="Клуб заявки відсутній" />
+  if (club.archivedAt || (request.status && request.status !== 'pending')) return <NotFoundPage title="Заявка вже закрита для редагування" />
 
   async function handleSave(input) {
     const result = await updateRequest(request.id, input)

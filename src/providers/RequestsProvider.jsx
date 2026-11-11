@@ -3,6 +3,7 @@ import { RequestsContext } from '../context/RequestsContext.js'
 import { requestService } from '../services/requestService.js'
 import { errorMessage } from '../services/ServiceError.js'
 import useAuth from '../hooks/useAuth.js'
+import { isSupabaseData } from '../services/dataSource.js'
 
 export default function RequestsProvider({ children }) {
   const { user } = useAuth()
@@ -104,8 +105,8 @@ export default function RequestsProvider({ children }) {
   function deleteRequest(id) {
     return mutate(
       () => requestService.delete(id),
-      (previous) => previous.filter((entry) => entry.id !== id),
-      'Заявку видалено.',
+      (previous, record) => isSupabaseData ? previous.map((entry) => entry.id === id ? record : entry) : previous.filter((entry) => entry.id !== id),
+      isSupabaseData ? 'Заявку скасовано.' : 'Заявку видалено.',
     )
   }
 

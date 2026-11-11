@@ -11,6 +11,8 @@ import { customClubsKey } from './data/clubCatalog.js'
 import { deferred } from './test/deferred.js'
 import { signInDemo, signInOther, signOut } from './test/auth.js'
 
+vi.mock('./services/authService.js', () => import('./test/legacyAuthService.js'))
+
 vi.mock('./services/requestService.js', () => ({
   requestService: {
     getAll: vi.fn(),
@@ -82,7 +84,7 @@ test('показує завантаження до отримання колек
   requestService.getAll.mockReturnValueOnce(pending.promise)
   renderApp()
 
-  expect(screen.getByText('Завантаження заявок…')).toBeInTheDocument()
+  expect(await screen.findByText('Завантаження заявок…')).toBeInTheDocument()
   expect(screen.queryByText(savedRequest.motivation)).not.toBeInTheDocument()
 
   await act(async () => {
@@ -361,7 +363,7 @@ test('створює власний клуб, який одразу з’явл�
   await user.type(screen.getByLabelText('Найближча зустріч'), '2026-12-05')
   await user.click(screen.getByRole('button', { name: 'Створити клуб' }))
 
-  expect(await screen.findByRole('heading', { name: 'Клуб нічного читання' }))
+  expect(await screen.findByRole('heading', { level: 1, name: 'Клуб нічного читання' }))
     .toBeInTheDocument()
   expect(screen.getByText('Клуб створено.')).toBeInTheDocument()
   expect(screen.getByText('Ваш клуб')).toBeInTheDocument()
@@ -374,6 +376,19 @@ test('створює власний клуб, який одразу з’явл�
 
   await user.click(screen.getByRole('link', { name: 'До каталогу' }))
   expect(await screen.findByText('Клуб нічного читання')).toBeInTheDocument()
+})
+
+test('створює клуб без дати зустрічі та дозволяє редагування', async () => {
+  const user = renderApp('/clubs/new')
+  await user.type(await screen.findByLabelText('Назва клубу'), 'Клуб без дати')
+  await user.type(screen.getByLabelText('Жанр'), 'Поезія')
+  await user.type(screen.getByLabelText('Опис'), 'Дату зустрічі визначимо разом пізніше.')
+  expect(screen.getByLabelText('Найближча зустріч')).not.toBeRequired()
+  await user.click(screen.getByRole('button', { name: 'Створити клуб' }))
+  expect(await screen.findByRole('heading', { level: 1, name: 'Клуб без дати' })).toBeInTheDocument()
+  expect(JSON.parse(localStorage.getItem(customClubsKey))[0].nextMeeting).toBeNull()
+  await user.click(screen.getByRole('link', { name: 'Редагувати клуб' }))
+  expect(await screen.findByLabelText('Найближча зустріч')).toHaveValue('')
 })
 
 test('некоректна форма клубу не зберігається', async () => {
@@ -421,7 +436,7 @@ test('власник редагує клуб і бачить оновлену н
   await user.type(name, 'Оновлена назва клубу')
   await user.click(screen.getByRole('button', { name: 'Зберегти зміни' }))
 
-  expect(await screen.findByRole('heading', { name: 'Оновлена назва клубу' }))
+  expect(await screen.findByRole('heading', { level: 1, name: 'Оновлена назва клубу' }))
     .toBeInTheDocument()
   expect(screen.getByText('Зміни клубу збережено.')).toBeInTheDocument()
   expect(JSON.parse(localStorage.getItem(customClubsKey))[0]).toMatchObject({

@@ -1,72 +1,60 @@
-import { useState } from 'react'
+﻿import { useCallback, useEffect, useRef, useState } from 'react'
 import { ClubsContext } from '../context/ClubsContext.js'
-import { clubs as seedClubs } from '../data/clubs.js'
-import { readCustomClubs, writeCustomClubs } from '../data/clubCatalog.js'
-import { validateClub } from '../domain/clubValidation.js'
+import { clubService } from '../services/clubService.js'
+import { errorMessage } from '../services/ServiceError.js'
+import { isSupabaseData } from '../services/dataSource.js'
+import MockClubsProvider from './MockClubsProvider.jsx'
 import useAuth from '../hooks/useAuth.js'
 
-const storageFailure = {
-  ok: false,
-  message: 'Не вдалося зберегти клуб у локальному сховищі.',
+function RemoteClubsProvider({ children }) {
+  const [clubs, setClubs] = useState([])
+  const [status, setStatus] = useState('loading')
+  const [error, setError] = useState('')
+  const [isMutating, setIsMutating] = useState(false)
+  const read = useRef(null)
+  const version = useRef(0)
+  const lock = useRef(false)
+  const alive = useRef(false)
+  const reload = useCallback(async (preserve = false) => {
+    read.current?.abort()
+    const controller = new AbortController()
+    read.current = controller
+    const ticket = ++version.current
+    if (!preserve) setStatus('loading')
+    setError('')
+    try {
+      const records = await clubService.getAll({ signal: controller.signal })
+      if (controller.signal.aborted || ticket !== version.current) return
+      setClubs(records); setStatus('success')
+    } catch (cause) {
+      if (controller.signal.aborted || ticket !== version.current) return
+      setError(errorMessage(cause)); setStatus('error')
+    }
+  }, [])
+  useEffect(() => {
+    alive.current = true
+    void Promise.resolve().then(() => { if (alive.current) void reload() })
+    return () => { alive.current = false; read.current?.abort(); version.current += 1 }
+  }, [reload])
+  async function mutate(operation) {
+    if (lock.current) return { ok: false, message: 'Дочекайтеся завершення операції.' }
+    lock.current = true; setIsMutating(true)
+    try {
+      const club = await operation()
+      if (alive.current) await reload(true)
+      return { ok: true, club }
+    } catch (cause) { return { ok: false, message: errorMessage(cause), errors: cause.errors } }
+    finally { lock.current = false; if (alive.current) setIsMutating(false) }
+  }
+  return <ClubsContext.Provider value={{ clubs, status, error, reload, isMutating,
+    createClub: (input) => mutate(() => clubService.create(input)),
+    updateClub: (id, input) => mutate(() => clubService.update(id, input)),
+    deleteClub: (id) => mutate(() => clubService.archive(id)),
+  }}>{children}</ClubsContext.Provider>
 }
-
 export default function ClubsProvider({ children }) {
   const { user } = useAuth()
-  const [customClubs, setCustomClubs] = useState(() => readCustomClubs())
-  const clubs = [...seedClubs, ...customClubs]
-
-  function persist(next) {
-    if (!writeCustomClubs(next)) return false
-    setCustomClubs(next)
-    return true
-  }
-
-  function findOwned(id) {
-    return customClubs.find((club) => club.id === id && club.ownerId === user?.id)
-  }
-
-  function createClub(input) {
-    if (!user) return { ok: false, message: 'Увійдіть, щоб створити клуб.' }
-
-    const validation = validateClub(input)
-    if (!validation.ok) return validation
-
-    const club = {
-      ...validation.value,
-      id: `club-${crypto.randomUUID()}`,
-      membersCount: 1,
-      ownerId: user.id,
-      ownerName: user.name,
-    }
-    return persist([...customClubs, club]) ? { ok: true, club } : storageFailure
-  }
-
-  function updateClub(id, input) {
-    const current = findOwned(id)
-    if (!current) {
-      return { ok: false, message: 'Редагувати клуб може лише його власник.' }
-    }
-
-    const validation = validateClub(input)
-    if (!validation.ok) return validation
-
-    const club = { ...current, ...validation.value }
-    const next = customClubs.map((entry) => (entry.id === id ? club : entry))
-    return persist(next) ? { ok: true, club } : storageFailure
-  }
-
-  function deleteClub(id) {
-    if (!findOwned(id)) {
-      return { ok: false, message: 'Видалити клуб може лише його власник.' }
-    }
-    return persist(customClubs.filter((entry) => entry.id !== id))
-      ? { ok: true }
-      : storageFailure
-  }
-
-  return (
-    <ClubsContext.Provider value={{ clubs, createClub, updateClub, deleteClub }}>
-      {children}
-    </ClubsContext.Provider>
-  )
+  return isSupabaseData
+    ? <RemoteClubsProvider key={user?.id ?? 'guest'}>{children}</RemoteClubsProvider>
+    : <MockClubsProvider>{children}</MockClubsProvider>
 }

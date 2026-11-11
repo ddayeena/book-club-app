@@ -1,4 +1,4 @@
-import { demoUser, sessionKey, usersKey } from '../services/authService.js'
+import { demoUser, sessionKey, usersKey } from './legacyAuthService.js'
 
 export const otherUser = {
   id: 'user-other',

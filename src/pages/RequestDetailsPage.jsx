@@ -12,6 +12,7 @@ import {
 } from '../domain/options.js'
 import { formatCreatedAt } from '../domain/dates.js'
 import NotFoundPage from './NotFoundPage.jsx'
+import { requestStatusLabel } from '../domain/requestStatus.js'
 
 export default function RequestDetailsPage() {
   const { clubs } = useClubs()
@@ -50,6 +51,7 @@ export default function RequestDetailsPage() {
         <dl>
           <dt>Клуб</dt>
           <dd>{club?.name ?? 'Клуб відсутній у каталозі'}</dd>
+          {request.status && <><dt>Статус</dt><dd>{requestStatusLabel(request.status)}</dd><dt>Рішення</dt><dd>{request.decisionComment || '—'}</dd></>}
           <dt>Мотивація</dt>
           <dd>{request.motivation}</dd>
           <dt>Годин на тиждень</dt>
@@ -73,12 +75,14 @@ export default function RequestDetailsPage() {
       </aside>
 
       <div className="page-toolbar">
+        {(!request.status || (request.status === 'pending' && !club?.archivedAt)) && <>
         <Link to={`/requests/${encodeURIComponent(request.id)}/edit`} className="link-button">
           Редагувати заявку
         </Link>
         <AppButton variant="secondary" onClick={handleDelete} disabled={isMutating}>
-          Видалити заявку
+          {request.status ? 'Скасувати заявку' : 'Видалити заявку'}
         </AppButton>
+        </>}
       </div>
       <p role="status">{isMutating ? 'Опрацювання зміни…' : ''}</p>
       <p><Link to="/requests" className="link-inline">До всіх заявок</Link></p>

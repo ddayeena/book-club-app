@@ -11,7 +11,7 @@ export default function ClubsListPage() {
   const { clubs } = useClubs()
   const { user } = useAuth()
   const { selectedId, selectClub } = useClubSelection()
-  const filters = useClubFilters(clubs)
+  const filters = useClubFilters(clubs.filter((club) => !club.archivedAt))
   const location = useLocation()
   const notice = location.state?.notice
   const requestSearch = selectedId
@@ -41,6 +41,13 @@ export default function ClubsListPage() {
       </div>
 
       {notice && <p role="status" className="flash">{notice}</p>}
+      {user && clubs.some((club) => club.archivedAt && (club.ownerId === user.id || user.role === 'admin')) && (
+        <details><summary>Архів клубів</summary><ul>
+          {clubs.filter((club) => club.archivedAt && (club.ownerId === user.id || user.role === 'admin')).map((club) => (
+            <li key={club.id}><Link to={`/clubs/${club.id}`}>{club.name}</Link></li>
+          ))}
+        </ul></details>
+      )}
 
       <div className="catalog-layout">
         <aside className="catalog-aside">

@@ -6,6 +6,7 @@ import {
   participationOptions,
 } from '../../domain/options.js'
 import { formatCreatedAt } from '../../domain/dates.js'
+import { requestStatusLabel } from '../../domain/requestStatus.js'
 
 export default function RequestTable({ requests, clubs, onDelete, isMutating = false }) {
   return (
@@ -30,6 +31,7 @@ export default function RequestTable({ requests, clubs, onDelete, isMutating = f
                 <td>
                   <strong>{club?.name ?? 'Клуб відсутній'}</strong>
                   <p>{request.motivation}</p>
+                  {request.status && <p>{requestStatusLabel(request.status)}</p>}
                   <p className="row-date">Створено: {formatCreatedAt(request.createdAt)}</p>
                 </td>
                 <td>
@@ -48,14 +50,16 @@ export default function RequestTable({ requests, clubs, onDelete, isMutating = f
                 <td>
                   <div className="row-actions">
                     <Link to={path} className="link-inline">Переглянути</Link>
+                    {(!request.status || (request.status === 'pending' && !club?.archivedAt)) && <>
                     <Link to={`${path}/edit`} className="link-inline">Редагувати</Link>
                     <AppButton
                       variant="secondary"
                       disabled={isMutating}
                       onClick={() => onDelete(request)}
                     >
-                      Видалити
+                      {request.status ? 'Скасувати' : 'Видалити'}
                     </AppButton>
+                    </>}
                   </div>
                 </td>
               </tr>

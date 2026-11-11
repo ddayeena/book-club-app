@@ -43,6 +43,7 @@ export default function RequestCreatePage() {
   if (!club) {
     return <NotFoundPage title="Клуб нової заявки не знайдено" />
   }
+  if (club.archivedAt || club.isMember) return <NotFoundPage title="Заявка недоступна: клуб архівовано або ви вже учасник" />
 
   async function handleSave(input) {
     const result = await createRequest(input)

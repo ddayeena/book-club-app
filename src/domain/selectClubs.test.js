@@ -40,6 +40,12 @@ test('не змінює вхідну колекцію', () => {
   selectClubs(frozen, { sort: 'members-desc' })
   expect(frozen.map((club) => club.id)).toEqual(before)
 })
+
+test('клуби без дати сортуються після клубів із датою', () => {
+  const undated = { ...ownClub, id: 'undated', nextMeeting: null }
+  const result = selectClubs([undated, ...frozen], { sort: 'meeting-asc' })
+  expect(result.at(-1).id).toBe('undated')
+})
 test('фільтр за власником показує лише клуби цього користувача', () => {
   const withOwner = [...frozen, ownClub]
 

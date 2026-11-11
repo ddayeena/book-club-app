@@ -2,8 +2,8 @@ import { listAllClubs } from '../data/clubCatalog.js'
 import { validateRequest } from '../domain/requestValidation.js'
 import { ServiceError } from './ServiceError.js'
 
-export function toRequestInput(input) {
-  const result = validateRequest(input, listAllClubs())
+export function toRequestInput(input, clubs = listAllClubs()) {
+  const result = validateRequest(input, clubs)
   if (!result.ok) {
     throw new ServiceError('Перевірте поля заявки.', {
       code: 'VALIDATION',

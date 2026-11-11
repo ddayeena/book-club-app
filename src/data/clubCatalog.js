@@ -15,7 +15,7 @@ function isClubRecord(value) {
     && typeof value.format === 'string'
     && typeof value.language === 'string'
     && Number.isInteger(value.meetingsPerMonth)
-    && typeof value.nextMeeting === 'string'
+    && (value.nextMeeting === null || typeof value.nextMeeting === 'string')
     && (value.ownerId === null || typeof value.ownerId === 'string')
 }
 

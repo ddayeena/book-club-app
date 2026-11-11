@@ -6,6 +6,8 @@ import ClubsProvider from '../../providers/ClubsProvider.jsx'
 import ClubSelectionProvider from '../../providers/ClubSelectionProvider.jsx'
 import RequestsProvider from '../../providers/RequestsProvider.jsx'
 import useAuth from '../../hooks/useAuth.js'
+import AuthGate from '../auth/AuthGate.jsx'
+import ClubsGate from '../clubs/ClubsGate.jsx'
 
 function Shell() {
   const { user } = useAuth()
@@ -18,7 +20,9 @@ function Shell() {
       <RequestsProvider key={user?.id ?? 'guest'}>
         <main id="main-content" tabIndex={-1}>
           <ErrorBoundary resetKey={location.pathname}>
-            <Outlet />
+            {['/login', '/register', '/logout'].includes(location.pathname)
+              ? <Outlet />
+              : <ClubsGate><Outlet /></ClubsGate>}
           </ErrorBoundary>
         </main>
       </RequestsProvider>
@@ -39,11 +43,13 @@ function Shell() {
 export default function AppLayout() {
   return (
     <AuthProvider>
-      <ClubsProvider>
-        <ClubSelectionProvider>
-          <Shell />
-        </ClubSelectionProvider>
-      </ClubsProvider>
+      <AuthGate>
+        <ClubsProvider>
+          <ClubSelectionProvider>
+            <Shell />
+          </ClubSelectionProvider>
+        </ClubsProvider>
+      </AuthGate>
     </AuthProvider>
   )
 }

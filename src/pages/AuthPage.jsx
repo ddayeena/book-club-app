@@ -6,8 +6,6 @@ import FormField from '../components/ui/FormField.jsx'
 import useAuth from '../hooks/useAuth.js'
 import { validateLogin, validateRegistration } from '../domain/authValidation.js'
 
-const demo = { email: 'demo@bookclub.test', password: 'demo1234' }
-
 export default function AuthPage({ mode }) {
   const isRegister = mode === 'register'
   const { user, login, register } = useAuth()
@@ -21,6 +19,7 @@ export default function AuthPage({ mode }) {
   const [formError, setFormError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [confirmation, setConfirmation] = useState(false)
 
   if (user) return <Navigate to={target} replace />
 
@@ -48,18 +47,18 @@ export default function AuthPage({ mode }) {
 
     setIsSubmitting(true)
     const result = await (isRegister ? register(values) : login(values))
+    if (result.ok && result.confirmationRequired) {
+      setConfirmation(true)
+      setValues((previous) => ({ ...previous, password: '' }))
+      setAttempted(false)
+      setIsSubmitting(false)
+    }
     // Після успіху користувач зʼявляється в контексті, і сторінка перенаправляє сама.
     if (!result.ok) {
       setServerErrors(result.errors ?? {})
       setFormError(result.errors ? '' : result.message)
       setIsSubmitting(false)
     }
-  }
-
-  function fillDemo() {
-    setValues((previous) => ({ ...previous, ...demo }))
-    setAttempted(false)
-    setFormError('')
   }
 
   return (
@@ -86,6 +85,7 @@ export default function AuthPage({ mode }) {
         </p>
 
         <form noValidate onSubmit={handleSubmit} aria-label={isRegister ? 'Форма реєстрації' : 'Форма входу'}>
+          {confirmation && <p role="status" className="flash">Перевірте пошту для підтвердження реєстрації, потім увійдіть. Якщо лист не надійшов, перевірте спам.</p>}
           {formError && <p role="alert" className="form-alert">{formError}</p>}
 
           {isRegister && (
@@ -162,18 +162,8 @@ export default function AuthPage({ mode }) {
           )}
         </p>
 
-        {!isRegister && (
-          <div className="demo-box">
-            <p>
-              Демонстраційний доступ: <strong>{demo.email}</strong>, пароль{' '}
-              <strong>{demo.password}</strong>.
-            </p>
-            <AppButton variant="secondary" onClick={fillDemo}>Заповнити демо-даними</AppButton>
-          </div>
-        )}
-
         <p className="field-hint">
-          Це навчальна імітація: облікові записи зберігаються лише в цьому браузері.
+          Для входу використовуйте обліковий запис із підтвердженою поштою. Старі локальні облікові записи не перенесено.
         </p>
       </div>
     </div>

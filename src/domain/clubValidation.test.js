@@ -45,12 +45,18 @@ describe('validateClub', () => {
       .toBeTruthy()
   })
 
-  test.each(['', '2026-13-01', '2026-02-30', '05.12.2026', 'завтра'])(
+  test.each(['2026-13-01', '2026-02-30', '05.12.2026', 'завтра'])(
     'відхиляє дату %j',
     (nextMeeting) => {
       expect(validateClub({ ...valid, nextMeeting }).errors.nextMeeting).toBeTruthy()
     },
   )
+
+  test.each(['', null, undefined, '   '])('дозволяє відсутню дату %j', (nextMeeting) => {
+    const result = validateClub({ ...valid, nextMeeting })
+    expect(result.ok).toBe(true)
+    expect(result.value.nextMeeting).toBeNull()
+  })
 
   test('відхиляє невідомий формат і мову', () => {
     const result = validateClub({ ...valid, format: 'moon', language: 'Клінгонська' })

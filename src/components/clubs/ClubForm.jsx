@@ -4,7 +4,7 @@ import { clubFormatOptions, languageOptions } from '../../domain/options.js'
 
 export default function ClubForm({
   idPrefix, draft, errors, operationError, genres,
-  onChange, onBlur, onSubmit, onCancel, submitLabel,
+  onChange, onBlur, onSubmit, onCancel, submitLabel, isSubmitting = false,
 }) {
   const ids = {
     name: `${idPrefix}-name`,
@@ -39,6 +39,8 @@ export default function ClubForm({
     <form noValidate onSubmit={onSubmit} aria-label="Форма клубу">
       {hasErrors && <p role="alert" className="form-alert">Виправте позначені поля.</p>}
       {operationError && <p role="alert" className="form-alert">{operationError}</p>}
+      <fieldset className="fieldset-plain" disabled={isSubmitting}>
+      <legend className="visually-hidden">Дані клубу</legend>
 
       <FormField
         id={ids.name}
@@ -110,10 +112,10 @@ export default function ClubForm({
         <FormField
           id={ids.meeting}
           label="Найближча зустріч"
-          hint="Орієнтовна дата."
+          hint="Необов’язково. Дату можна додати пізніше."
           error={errors.nextMeeting}
         >
-          <input type="date" required {...bind('nextMeeting', ids.meeting)} />
+          <input type="date" {...bind('nextMeeting', ids.meeting)} />
         </FormField>
       </div>
 
@@ -121,6 +123,7 @@ export default function ClubForm({
         <AppButton type="submit">{submitLabel}</AppButton>
         <AppButton variant="secondary" onClick={onCancel}>Скасувати</AppButton>
       </div>
+      </fieldset>
     </form>
   )
 }

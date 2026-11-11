@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import PageHeading from '../components/ui/PageHeading.jsx'
 import ClubForm from '../components/clubs/ClubForm.jsx'
@@ -31,19 +31,25 @@ function toDraft(club) {
     format: club.format,
     language: club.language,
     meetingsPerMonth: String(club.meetingsPerMonth),
-    nextMeeting: club.nextMeeting,
+    nextMeeting: club.nextMeeting ?? '',
   }
 }
 
 function ClubEditor({ club }) {
   const navigate = useNavigate()
-  const { clubs, createClub, updateClub } = useClubs()
+  const { clubs, createClub, updateClub, isMutating } = useClubs()
   const editing = Boolean(club)
   const initialValues = toDraft(club)
   const [draft, setDraft] = useState(() => toDraft(club))
   const [touched, setTouched] = useState({})
   const [attempted, setAttempted] = useState(false)
   const [operationError, setOperationError] = useState('')
+  const alive = useRef(false)
+  const submitting = useRef(false)
+  useEffect(() => {
+    alive.current = true
+    return () => { alive.current = false }
+  }, [])
 
   const validation = validateClub(draft)
   const errors = Object.fromEntries(
@@ -63,8 +69,9 @@ function ClubEditor({ club }) {
     setTouched((previous) => ({ ...previous, [field]: true }))
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
+    if (submitting.current) return
     setAttempted(true)
     setOperationError('')
 
@@ -74,7 +81,10 @@ function ClubEditor({ club }) {
       return
     }
 
-    const result = editing ? updateClub(club.id, draft) : createClub(draft)
+    submitting.current = true
+    const result = await (editing ? updateClub(club.id, draft) : createClub(draft))
+    submitting.current = false
+    if (!alive.current) return
     if (!result.ok) {
       setOperationError(
         result.errors ? Object.values(result.errors).join(' ') : result.message,
@@ -113,6 +123,7 @@ function ClubEditor({ club }) {
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           submitLabel={editing ? 'Зберегти зміни' : 'Створити клуб'}
+          isSubmitting={isMutating}
         />
         <ClubPreview draft={draft} />
       </div>
@@ -127,7 +138,7 @@ export default function ClubEditorPage() {
   const club = clubId ? clubs.find((entry) => entry.id === clubId) : null
 
   if (clubId && !club) return <NotFoundPage title="Клуб не знайдено" />
-  if (club && club.ownerId !== user?.id) {
+  if (club && (club.archivedAt || (club.ownerId !== user?.id && user?.role !== 'admin'))) {
     return (
       <NotFoundPage
         title="Немає доступу"
