@@ -32,6 +32,9 @@ import ClubMeetingsPage from './pages/ClubMeetingsPage.jsx'
 import MeetingDetailsPage from './pages/MeetingDetailsPage.jsx'
 import MeetingEditorPage from './pages/MeetingEditorPage.jsx'
 import NotificationsPage from './pages/NotificationsPage.jsx'
+import ClubDiscussionsPage from './pages/ClubDiscussionsPage.jsx'
+import DiscussionDetailsPage from './pages/DiscussionDetailsPage.jsx'
+import DiscussionEditorPage from './pages/DiscussionEditorPage.jsx'
 
 export default function App() {
   return (
@@ -56,6 +59,10 @@ export default function App() {
             <Route path=":clubId/meetings/new" element={<MeetingEditorPage />} />
             <Route path=":clubId/meetings/:meetingId" element={<MeetingDetailsPage />} />
             <Route path=":clubId/meetings/:meetingId/edit" element={<MeetingEditorPage />} />
+            <Route path=":clubId/discussions" element={<ClubDiscussionsPage />} />
+            <Route path=":clubId/discussions/new" element={<DiscussionEditorPage />} />
+            <Route path=":clubId/discussions/:discussionId" element={<DiscussionDetailsPage />} />
+            <Route path=":clubId/discussions/:discussionId/edit" element={<DiscussionEditorPage />} />
           </Route>
           <Route path=":clubId" element={<ClubDetailsPage />} />
           <Route path=":clubId/books" element={<ClubBooksPage />} />
