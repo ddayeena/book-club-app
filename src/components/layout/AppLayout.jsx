@@ -6,11 +6,12 @@ import ClubSelectionProvider from '../../providers/ClubSelectionProvider.jsx'
 import RequestsProvider from '../../providers/RequestsProvider.jsx'
 import useAuth from '../../hooks/useAuth.js'
 import ClubsGate from '../clubs/ClubsGate.jsx'
+import NotificationsProvider from '../../providers/NotificationsProvider.jsx'
 
 function Shell() {
   const { user } = useAuth()
   const location = useLocation()
-  const profilePage = /^\/profile\/?$/.test(location.pathname)
+  const profilePage = /^\/(profile|notifications)\/?$/.test(location.pathname)
 
   return (
     <div className="site">
@@ -41,8 +42,8 @@ function Shell() {
 
 export default function AppLayout() {
   const { pathname } = useLocation()
-  if (/^\/profile\/?$/.test(pathname)) return <Shell />
-  return <ClubsProvider><ClubSelectionProvider><Shell /></ClubSelectionProvider></ClubsProvider>
+  return <NotificationsProvider>{/^\/(profile|notifications)\/?$/.test(pathname) ? <Shell />
+    : <ClubsProvider><ClubSelectionProvider><Shell /></ClubSelectionProvider></ClubsProvider>}</NotificationsProvider>
 }
 function ContentProviders({ profilePage, userId, children }) {
   return profilePage ? children : <RequestsProvider key={userId}>{children}</RequestsProvider>

@@ -14,6 +14,7 @@ vi.mock('../hooks/useAuth.js', () => ({ default: vi.fn() }))
 vi.mock('../hooks/useClubs.js', () => ({ default: vi.fn() }))
 vi.mock('../hooks/useRequests.js', () => ({ default: () => ({ requests: [], status: 'success' }) }))
 vi.mock('../services/dataSource.js', () => ({ isSupabaseData: true }))
+vi.mock('../services/notificationService.js', () => ({ notificationService: { count: async () => 0 } }))
 vi.mock('../services/meetingService.js', () => ({ meetingService: { list: vi.fn(), get: vi.fn(), save: vi.fn(), cancel: vi.fn() } }))
 const reload = vi.fn(), refreshAccess = vi.fn()
 const club = { id: 'c', name: 'Книжковий клуб', ownerId: 'owner', isMember: true, format: 'online', language: 'Українська', description: 'Читаємо разом.', genre: 'Проза', membersCount: 2 }

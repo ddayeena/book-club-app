@@ -828,6 +828,18 @@ button[aria-pressed="true"].app-button { background: #141b2b; color: #ffffff; bo
 .admin-member-owner { color: #752a3b; background: #f3e6d3; font-size: .8rem; padding: .15rem .5rem; border-radius: .3rem; }
 .admin-members-empty { margin-top: 1rem; color: #62545a; }
 .personal-page { color: #1c2433; }
+.header-account { display: flex; align-items: center; justify-content: flex-end; gap: .75rem; min-width: 0; }
+.notification-bell { position: relative; display: inline-flex; align-items: center; justify-content: center; color: #752a3b; min-width: 2.75rem; min-height: 2.75rem; border: 1px solid #ddd4c9; border-radius: 50%; flex-shrink: 0; }
+.notification-count, .notification-unknown { position: absolute; right: -.35rem; top: -.3rem; border-radius: 1rem; padding: .05rem .35rem; font-size: .7rem; background: #752a3b; color: #fffdf8; }
+.notification-unknown { background: #62545a; }
+.notification-list { list-style: none; padding: 0; display: grid; gap: 1rem; margin-block: 1.5rem; }
+.notification-card { background: #fffdf8; border: 1px solid #ddd4c9; border-radius: .75rem; padding: clamp(1rem, 3vw, 1.5rem); overflow-wrap: anywhere; }
+.notification-unread { border-inline-start: 4px solid #752a3b; }
+.notification-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; color: #62545a; font-size: .85rem; }
+.notification-card a { color: #752a3b; font-weight: 600; }
+.notifications-page .page-toolbar, .notification-card .form-actions { flex-wrap: wrap; }
+.notifications-page .chip[aria-pressed="true"] { background: #752a3b; border-color: #752a3b; }
+@media (max-width: 550px) { .header-account { gap: .4rem; flex-wrap: wrap; } .notification-meta { flex-direction: column; } }
 .personal-nav { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; margin-block: 1rem 1.5rem; }
 .personal-nav a { color: #752a3b; font-weight: 600; }
 .profile-card { max-width: 52rem; padding: clamp(1rem, 3vw, 2rem); background: #fffdf8; border: 1px solid #ddd4c9; border-radius: .8rem; }

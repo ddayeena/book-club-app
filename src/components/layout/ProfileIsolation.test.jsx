@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { expect, test, vi } from 'vitest'
 import App from '../../App.jsx'
+vi.mock('../../services/notificationService.js', () => ({ notificationService: { count: async () => 0 } }))
 vi.mock('../../providers/AuthProvider.jsx', () => ({ default: ({ children }) => children }))
 vi.mock('../../hooks/useAuth.js', () => ({ default: () => ({ user: { id: 'u', name: 'Reader', role: 'user' }, status: 'ready' }) }))
 vi.mock('../../providers/ClubsProvider.jsx', () => ({ default: () => { throw new Error('Catalog unavailable') } }))

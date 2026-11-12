@@ -2,6 +2,7 @@ import { Link } from 'react-router'
 import MainNav from '../navigation/MainNav.jsx'
 import UserMenu from './UserMenu.jsx'
 import useAuth from '../../hooks/useAuth.js'
+import NotificationBell from '../notifications/NotificationBell.jsx'
 
 export default function SiteHeader() {
   const { user } = useAuth()
@@ -21,7 +22,7 @@ export default function SiteHeader() {
           <span className="wordmark-text"><em>ReadHub</em></span>
         </Link>
         <MainNav links={links} />
-        <UserMenu />
+        <div className="header-account">{user && <NotificationBell />}<UserMenu /></div>
       </div>
       <div className="masthead-stripe" aria-hidden="true">
         <i /><i /><i /><i /><i /><i />

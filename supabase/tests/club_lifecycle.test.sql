@@ -77,7 +77,9 @@ select throws_ok($$select public.review_join_request((select id from ctx where l
 select set_config('request.jwt.claims','{"sub":"20000000-0000-4000-8000-000000000002","role":"authenticated"}',true);
 select is((select count(*)::integer from public.notifications where request_id=(select id from ctx where label='r2')),1,'applicant gets decision');
 select throws_ok($$update public.notifications set body='Підміна'$$,'42501',null,'notification body immutable');
-select lives_ok($$update public.notifications set read_at=now()$$,'recipient can mark read');
+select lives_ok(case when to_regprocedure('public.mark_notification_read(uuid)') is not null
+ then $$select public.mark_notification_read(id) from public.notifications where read_at is null$$
+ else $$update public.notifications set read_at=now()$$ end,'recipient can mark read through supported API');
 select throws_ok($$select public.update_join_request((select id from ctx where label='r2'),(select request from inputs))$$,'42501',null,'reviewed form immutable');
 insert into ctx select 'r3',(public.submit_join_request((select request from inputs))).id;
 select set_config('request.jwt.claims','{"sub":"20000000-0000-4000-8000-000000000001","role":"authenticated"}',true);

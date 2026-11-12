@@ -12,6 +12,7 @@ import { deferred } from './test/deferred.js'
 import { signInDemo, signInOther, signOut } from './test/auth.js'
 
 vi.mock('./services/authService.js', () => import('./test/legacyAuthService.js'))
+vi.mock('./services/notificationService.js', () => ({ notificationService: { count: async () => 0 } }))
 
 vi.mock('./services/requestService.js', () => ({
   requestService: {
@@ -328,8 +329,9 @@ test('вихід повертає на головну й закриває роз
 
   await user.click(header.getByRole('button', { name: 'Вийти' }))
 
-  expect(await header.findByRole('link', { name: 'Увійти' })).toBeInTheDocument()
-  expect(header.queryByRole('link', { name: 'Мої заявки' })).not.toBeInTheDocument()
+  // Account-scoped providers remount the shell; inspect the current header after logout.
+  expect(await screen.findByRole('link', { name: 'Увійти' })).toBeInTheDocument()
+  expect(within(screen.getByRole('banner')).queryByRole('link', { name: 'Мої заявки' })).not.toBeInTheDocument()
 })
 
 test('вихід із захищеної сторінки веде на головну, а не на вхід', async () => {

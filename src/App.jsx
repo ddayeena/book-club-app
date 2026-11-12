@@ -31,6 +31,7 @@ import MyClubsPage from './pages/MyClubsPage.jsx'
 import ClubMeetingsPage from './pages/ClubMeetingsPage.jsx'
 import MeetingDetailsPage from './pages/MeetingDetailsPage.jsx'
 import MeetingEditorPage from './pages/MeetingEditorPage.jsx'
+import NotificationsPage from './pages/NotificationsPage.jsx'
 
 export default function App() {
   return (
@@ -62,6 +63,7 @@ export default function App() {
 
         <Route element={<RequireAuth />}>
           <Route path="profile" element={<ProfilePage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
           <Route path="my-clubs" element={<MyClubsPage />} />
           <Route path="requests" element={<RequestsLayout />}>
             <Route index element={<RequestsPage />} />
