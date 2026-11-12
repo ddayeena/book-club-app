@@ -42,9 +42,9 @@ test('архівування викликає RPC, не фізичне вида�
   expect(client.rpc).toHaveBeenCalledWith('archive_club', { p_id: 'remote-club' })
 })
 
-test('порожня дата передається в RPC як NULL', async () => {
+test('форма клубу не передає окрему дату до RPC', async () => {
   await clubService.create({ ...ownClub, nextMeeting: '' })
-  expect(client.rpc.mock.calls[0][1].p_input.next_meeting).toBeNull()
+  expect(client.rpc.mock.calls[0][1].p_input).not.toHaveProperty('next_meeting')
 })
 
 test('каталог зберігає currentBook із похідного поля RPC після перенесення', async () => {

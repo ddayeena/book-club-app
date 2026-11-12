@@ -46,6 +46,13 @@ test('клуби без дати сортуються після клубів і
   const result = selectClubs([undated, ...frozen], { sort: 'meeting-asc' })
   expect(result.at(-1).id).toBe('undated')
 })
+
+test('сортує точні моменти, навіть коли місцеві дати організаторів мають інший порядок', () => {
+  const first = { ...ownClub, id: 'first', nextMeeting: '2099-01-02', nextMeetingAt: '2099-01-01T12:00:00Z' }
+  const second = { ...ownClub, id: 'second', nextMeeting: '2099-01-01', nextMeetingAt: '2099-01-01T13:00:00Z' }
+  const undated = { ...ownClub, id: 'none', nextMeeting: null, nextMeetingAt: null, legacyNextMeeting: '2020-01-01' }
+  expect(selectClubs([second, undated, first], { sort: 'meeting-asc' }).map((c) => c.id)).toEqual(['first', 'second', 'none'])
+})
 test('фільтр за власником показує лише клуби цього користувача', () => {
   const withOwner = [...frozen, ownClub]
 

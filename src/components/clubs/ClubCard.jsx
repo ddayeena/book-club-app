@@ -6,6 +6,7 @@ import GenreTag from '../ui/GenreTag.jsx'
 import { clubFormatOptions, optionLabel } from '../../domain/options.js'
 import { formatMeetingDate } from '../../domain/dates.js'
 import { genreColor } from '../../domain/genreColor.js'
+import { formatMeetingTime } from '../../domain/meetingValidation.js'
 
 export default function ClubCard({ club, selected, onSelect, isOwn = false, showSelection = true }) {
   const [detailsOpen, setDetailsOpen] = useState(false)
@@ -33,11 +34,12 @@ export default function ClubCard({ club, selected, onSelect, isOwn = false, show
         <p className="club-row-reading">
           <ReadingStatusBadge currentBook={club.currentBook} />
         </p>
+        {club.legacyNextMeeting && <p className="field-hint">Дата зі старого розкладу — час не уточнено: {formatMeetingDate(club.legacyNextMeeting)}</p>}
 
         <dl className="club-facts">
           <div>
             <dt>Найближча зустріч</dt>
-            <dd>{formatMeetingDate(club.nextMeeting)}</dd>
+            <dd>{club.nextMeetingAt ? formatMeetingTime(club.nextMeetingAt) : formatMeetingDate(club.nextMeeting)}</dd>
           </div>
           <div>
             <dt>Зустрічей на місяць</dt>

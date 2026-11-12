@@ -28,6 +28,8 @@ insert into inputs values(
  '{"name":"Клуб тестів","genre":"Поезія","description":"Читаємо разом і обговорюємо книги.","format":"online","language":"Українська","meetings_per_month":2,"next_meeting":"2027-01-01","owner_id":"20000000-0000-4000-8000-000000000002"}',
  '{"motivation":"Хочу читати книги разом із клубом.","weekly_hours":2,"wants_reminders":false,"experience":"regular","participation_format":"any","contact_email":""}');
 grant all on ctx,inputs to authenticated,anon;
+-- Migration 009 closes the legacy schedule writer; retain compatibility with earlier fixtures.
+update inputs set club=club-'next_meeting' where to_regclass('public.club_meetings') is not null;
 set local role authenticated;
 select set_config('request.jwt.claims','{"sub":"20000000-0000-4000-8000-000000000001","role":"authenticated"}',true);
 insert into ctx select 'club',(public.create_club((select club from inputs))).id;
@@ -41,7 +43,7 @@ select ok((select next_meeting is null from public.clubs where id=(select id fro
 select lives_ok($$select public.update_club((select id from ctx where label='undated'),(select club || '{"next_meeting":""}'::jsonb from inputs))$$,
  'empty date on update becomes NULL');
 select throws_ok($$select public.update_club((select id from ctx where label='undated'),(select club || '{"next_meeting":"infinity"}'::jsonb from inputs))$$,
- '23514',null,'infinite dates are forbidden');
+ case when to_regclass('public.club_meetings') is null then '23514' else '55000' end,null,'legacy or infinite dates are forbidden');
 update inputs set request=request || jsonb_build_object('club_id',(select id from ctx where label='club'));
 select throws_ok($$select public.remove_club_member((select id from ctx where label='club'),auth.uid())$$,'42501',null,'owner cannot leave');
 select throws_ok($$update public.clubs set owner_id='20000000-0000-4000-8000-000000000002'$$,'42501',null,'no direct owner change');

@@ -13,7 +13,6 @@ export default function ClubForm({
     format: `${idPrefix}-format`,
     language: `${idPrefix}-language`,
     meetings: `${idPrefix}-meetings`,
-    meeting: `${idPrefix}-meeting`,
   }
   const listId = `${idPrefix}-genres`
   const hasErrors = Object.keys(errors).length > 0
@@ -101,14 +100,7 @@ export default function ClubForm({
           <input type="number" min={1} max={8} step={1} required {...bind('meetingsPerMonth', ids.meetings)} />
         </FormField>
 
-        <FormField
-          id={ids.meeting}
-          label="Найближча зустріч"
-          hint="Необов’язково. Дату можна додати пізніше."
-          error={errors.nextMeeting}
-        >
-          <input type="date" {...bind('nextMeeting', ids.meeting)} />
-        </FormField>
+        <p className="field-hint">Дати й час додаються в розділі «Зустрічі» після створення клубу.</p>
       </div>
 
       <div className="form-actions">

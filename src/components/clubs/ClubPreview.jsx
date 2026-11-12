@@ -1,6 +1,5 @@
 import GenreTag from '../ui/GenreTag.jsx'
 import { clubFormatOptions, optionLabel } from '../../domain/options.js'
-import { formatMeetingDate } from '../../domain/dates.js'
 import { genreColor } from '../../domain/genreColor.js'
 
 export default function ClubPreview({ draft }) {
@@ -29,7 +28,7 @@ export default function ClubPreview({ draft }) {
           <dl className="club-facts">
             <div>
               <dt>Найближча зустріч</dt>
-              <dd>{draft.nextMeeting ? formatMeetingDate(draft.nextMeeting) : 'Не вказано'}</dd>
+              <dd>Окремий розклад зустрічей</dd>
             </div>
             <div>
               <dt>Зустрічей на місяць</dt>

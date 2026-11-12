@@ -12,6 +12,7 @@ import { genreColor } from '../domain/genreColor.js'
 import NotFoundPage from './NotFoundPage.jsx'
 import { isSupabaseData } from '../services/dataSource.js'
 import LeaveClubButton from '../components/clubs/LeaveClubButton.jsx'
+import { formatMeetingTime, localDateTime } from '../domain/meetingValidation.js'
 
 export default function ClubDetailsPage() {
   const { clubId } = useParams()
@@ -35,11 +36,12 @@ export default function ClubDetailsPage() {
   const color = genreColor(club.genre)
   const isOwner = Boolean(user) && club.ownerId === user.id
   const canManage = isOwner || user?.role === 'admin'
+  const canReadMeetings = user && (isOwner || club.isMember || user.role === 'admin')
   const requestCount = user && status === 'success'
     ? requests.filter((request) => request.clubId === club.id).length
     : null
   const notice = location.state?.notice
-  const meeting = meetingParts(club.nextMeeting)
+  const meeting = meetingParts(club.nextMeetingAt ? localDateTime(club.nextMeetingAt).slice(0, 10) : club.nextMeeting)
 
   function handlePrepareRequest() {
     selectClub(club.id)
@@ -63,7 +65,7 @@ export default function ClubDetailsPage() {
   }
 
   const facts = [
-    ['Найближча зустріч', formatMeetingDate(club.nextMeeting)],
+    ['Найближча зустріч', club.nextMeetingAt ? formatMeetingTime(club.nextMeetingAt) : formatMeetingDate(club.nextMeeting)],
     ['Зустрічей на місяць', club.meetingsPerMonth],
     ['Мова спілкування', club.language],
     ['Учасників', club.membersCount],
@@ -113,6 +115,10 @@ export default function ClubDetailsPage() {
               {optionLabel(clubFormatOptions, club.format)}, {club.language.toLocaleLowerCase('uk')} мова,
               зустрічей на місяць: {club.meetingsPerMonth}.
             </p>
+            {club.nextMeetingAt && <p><time dateTime={club.nextMeetingAt}>{formatMeetingTime(club.nextMeetingAt)}</time> · {Intl.DateTimeFormat().resolvedOptions().timeZone}</p>}
+            {club.legacyNextMeeting && <p className="field-hint">Дата зі старого розкладу — час не уточнено: {formatMeetingDate(club.legacyNextMeeting)}</p>}
+            {canReadMeetings ? <Link to={`/clubs/${club.id}/meetings`} className="link-inline">Усі зустрічі</Link>
+              : <p className="field-hint">Деталі зустрічей доступні учасникам клубу.</p>}
           </section>
 
           <section className="club-howto" aria-label="Як приєднатися">

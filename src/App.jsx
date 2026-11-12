@@ -28,6 +28,9 @@ import AdminClubDetailsPage from './pages/AdminClubDetailsPage.jsx'
 import AdminUserDetailsPage from './pages/AdminUserDetailsPage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
 import MyClubsPage from './pages/MyClubsPage.jsx'
+import ClubMeetingsPage from './pages/ClubMeetingsPage.jsx'
+import MeetingDetailsPage from './pages/MeetingDetailsPage.jsx'
+import MeetingEditorPage from './pages/MeetingEditorPage.jsx'
 
 export default function App() {
   return (
@@ -48,6 +51,10 @@ export default function App() {
             <Route path=":clubId/requests" element={<ClubRequestsPage />} />
             <Route path=":clubId/polls" element={<ClubPollsPage />} />
             <Route path=":clubId/polls/:pollId" element={<ClubPollPage />} />
+            <Route path=":clubId/meetings" element={<ClubMeetingsPage />} />
+            <Route path=":clubId/meetings/new" element={<MeetingEditorPage />} />
+            <Route path=":clubId/meetings/:meetingId" element={<MeetingDetailsPage />} />
+            <Route path=":clubId/meetings/:meetingId/edit" element={<MeetingEditorPage />} />
           </Route>
           <Route path=":clubId" element={<ClubDetailsPage />} />
           <Route path=":clubId/books" element={<ClubBooksPage />} />

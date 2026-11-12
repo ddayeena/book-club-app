@@ -23,8 +23,12 @@ export function selectClubs(clubs, filters) {
   return selected.sort((a, b) => {
     let order
     if (sort === 'members-desc') order = b.membersCount - a.membersCount
-    else if (sort === 'meeting-asc') order = Number(!a.nextMeeting) - Number(!b.nextMeeting)
-      || (a.nextMeeting ?? '').localeCompare(b.nextMeeting ?? '')
+    else if (sort === 'meeting-asc') {
+      const aTime = a.nextMeetingAt ?? a.nextMeeting
+      const bTime = b.nextMeetingAt ?? b.nextMeeting
+      order = Number(!aTime) - Number(!bTime)
+        || (aTime && bTime ? Date.parse(aTime) - Date.parse(bTime) : 0)
+    }
     else order = a.name.localeCompare(b.name, 'uk')
     return order || a.id.localeCompare(b.id)
   })

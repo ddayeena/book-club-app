@@ -360,7 +360,7 @@ test('створює власний клуб, який одразу з’явл�
   await user.type(screen.getByLabelText('Жанр'), 'Поезія')
   await user.type(screen.getByLabelText('Опис'), 'Читаємо вірші й говоримо про них.')
   await user.selectOptions(screen.getByLabelText('Формат зустрічей'), 'offline')
-  await user.type(screen.getByLabelText('Найближча зустріч'), '2026-12-05')
+  expect(screen.queryByLabelText('Найближча зустріч')).not.toBeInTheDocument()
   await user.click(screen.getByRole('button', { name: 'Створити клуб' }))
 
   expect(await screen.findByRole('heading', { level: 1, name: 'Клуб нічного читання' }))
@@ -383,12 +383,13 @@ test('створює клуб без дати зустрічі та дозвол
   await user.type(await screen.findByLabelText('Назва клубу'), 'Клуб без дати')
   await user.type(screen.getByLabelText('Жанр'), 'Поезія')
   await user.type(screen.getByLabelText('Опис'), 'Дату зустрічі визначимо разом пізніше.')
-  expect(screen.getByLabelText('Найближча зустріч')).not.toBeRequired()
+  expect(screen.queryByLabelText('Найближча зустріч')).not.toBeInTheDocument()
   await user.click(screen.getByRole('button', { name: 'Створити клуб' }))
   expect(await screen.findByRole('heading', { level: 1, name: 'Клуб без дати' })).toBeInTheDocument()
   expect(JSON.parse(localStorage.getItem(customClubsKey))[0].nextMeeting).toBeNull()
   await user.click(screen.getByRole('link', { name: 'Редагувати клуб' }))
-  expect(await screen.findByLabelText('Найближча зустріч')).toHaveValue('')
+  await screen.findByLabelText('Назва клубу')
+  expect(screen.queryByLabelText('Найближча зустріч')).not.toBeInTheDocument()
 })
 
 test('некоректна форма клубу не зберігається', async () => {

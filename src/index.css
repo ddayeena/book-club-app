@@ -843,6 +843,15 @@ button[aria-pressed="true"].app-button { background: #141b2b; color: #ffffff; bo
 .profile-form .app-button-primary { background: #752a3b; }
 .profile-form .app-button-primary:hover:not(:disabled) { background: #54202e; }
 .my-clubs-section { margin-block: 2rem; }
+.meeting-list { list-style: none; padding: 0; display: grid; gap: 1rem; margin-block: 1.5rem; }
+.meeting-card { background: #fffdf8; border: 1px solid #ddd4c9; border-radius: .8rem; padding: clamp(1rem, 3vw, 1.5rem); margin-block: 1rem; overflow-wrap: anywhere; }
+.meeting-card h2 { font-size: 1.25rem; margin-block: .75rem; }
+.meeting-card a, .meetings-page .breadcrumb a { color: #752a3b; }
+.meeting-description { white-space: pre-wrap; }
+.meetings-page .chip[aria-current="page"] { background: #752a3b; border-color: #752a3b; color: #fffdf8; }
+.meeting-form { margin-block: 1.5rem; }
+.meetings-page .page-toolbar, .meetings-page .form-actions { flex-wrap: wrap; }
+.meeting-form input, .meeting-form select, .meeting-form textarea { max-width: 100%; min-width: 0; }
 .my-clubs-section h2 { margin-bottom: 1rem; }
 .my-clubs-list { list-style: none; padding: 0; display: grid; gap: 1rem; }
 .personal-count { font: 400 .9rem system-ui, sans-serif; color: #62545a; }

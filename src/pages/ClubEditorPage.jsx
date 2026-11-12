@@ -15,7 +15,6 @@ const emptyDraft = {
   format: 'online',
   language: 'Українська',
   meetingsPerMonth: '2',
-  nextMeeting: '',
 }
 
 const fieldOrder = Object.keys(emptyDraft)
@@ -29,7 +28,6 @@ function toDraft(club) {
     format: club.format,
     language: club.language,
     meetingsPerMonth: String(club.meetingsPerMonth),
-    nextMeeting: club.nextMeeting ?? '',
   }
 }
 
