@@ -1,4 +1,4 @@
-import { render, screen, within, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { beforeEach, expect, test, vi } from 'vitest'
@@ -9,7 +9,7 @@ import AdminClubDetailsPage from './AdminClubDetailsPage.jsx'
 import AdminClubsPage from './AdminClubsPage.jsx'
 import { adminService } from '../services/adminService.js'
 vi.mock('../hooks/useAuth.js', () => ({ default: vi.fn() }))
-vi.mock('../services/adminService.js', () => ({ adminService: { stats: vi.fn(), clubs: vi.fn(), club: vi.fn(), archive: vi.fn(), members: vi.fn() } }))
+vi.mock('../services/adminService.js', () => ({ adminService: { stats: vi.fn(), clubs: vi.fn(), club: vi.fn(), archive: vi.fn(), restore: vi.fn(), members: vi.fn() } }))
 let club
 function mount(path = '/admin') {
   return render(<MemoryRouter initialEntries={[path]}><Routes><Route path="admin" element={<AdminLayout />}>
@@ -106,4 +106,44 @@ test('empty descriptions do not create an empty card; archived club keeps owner 
   expect(screen.getByRole('region', { name: 'Адміністративні дії' })).toHaveTextContent('Клуб архівовано')
   expect(screen.queryByRole('button', { name: 'Архівувати клуб' })).not.toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Власник' })).toHaveAttribute('href', '/admin/users/owner')
+})
+
+test('admin restores archived club after confirmation and rereads its real status', async () => {
+  club = { ...club, archivedAt: '2026-11-12T12:00Z' }
+  adminService.restore.mockImplementation(async () => { club = { ...club, archivedAt: null } })
+  mount('/admin/clubs/c?state=archived&page=2')
+  const restore = await screen.findByRole('button', { name: 'Відновити клуб' })
+  await userEvent.click(restore)
+  expect(screen.getByRole('alertdialog')).toHaveTextContent('Раніше скасовані зустрічі та голосування автоматично не відновляться.')
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Скасувати' })).toHaveFocus())
+  await userEvent.keyboard('{Escape}')
+  await waitFor(() => expect(restore).toHaveFocus())
+  expect(adminService.restore).not.toHaveBeenCalled()
+  await userEvent.click(restore)
+  await userEvent.click(screen.getByRole('button', { name: 'Підтвердити' }))
+  await screen.findByText('Клуб відновлено.')
+  await screen.findByText('Активний')
+  expect(adminService.restore).toHaveBeenCalledTimes(1)
+  expect(adminService.restore).toHaveBeenCalledWith('c')
+  expect(adminService.club).toHaveBeenCalledTimes(2)
+  expect(screen.getByRole('link', { name: /До списку клубів/ })).toHaveAttribute('href', '/admin/clubs?state=archived&page=2')
+  expect(screen.queryByRole('button', { name: 'Відновити клуб' })).not.toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Архівувати клуб' })).toBeInTheDocument()
+})
+
+test('admin restore errors retain archived status and suppress duplicate clicks', async () => {
+  club = { ...club, archivedAt: '2026-11-12T12:00Z' }
+  let reject
+  adminService.restore.mockImplementation(() => new Promise((_done, fail) => { reject = fail }))
+  mount('/admin/clubs/c')
+  await userEvent.click(await screen.findByRole('button', { name: 'Відновити клуб' }))
+  const confirm = screen.getByRole('button', { name: 'Підтвердити' })
+  fireEvent.click(confirm); fireEvent.click(confirm)
+  expect(adminService.restore).toHaveBeenCalledTimes(1)
+  expect(screen.getByRole('button', { name: 'Відновити клуб' })).toBeDisabled()
+  expect(screen.getByText('Архівний')).toBeInTheDocument()
+  await act(async () => reject(new Error('network')))
+  await screen.findByRole('alert')
+  expect(screen.getByText('Архівний')).toBeInTheDocument()
+  expect(adminService.club).toHaveBeenCalledTimes(1)
 })

@@ -26,6 +26,13 @@ test('blocking accepts only ID and boolean, never role or other fields', async (
   result = { data: null, error: { code: '55000' } }
   await expect(adminService.setBlocked('admin', true)).rejects.toThrow('Останнього активного адміністратора')
 })
+
+test('admin restore uses the shared restore RPC without direct table writes', async () => {
+  await adminService.restore('club')
+  expect(client.rpc).toHaveBeenCalledWith('restore_club', { p_id: 'club' })
+  result = { data: null, error: { code: '42501' } }
+  await expect(adminService.restore('club')).rejects.toMatchObject({ code: '42501' })
+})
 test('club details reuse safe list_clubs projection including timestamps and archived records', async () => {
   result.data = [{ id: 'c', name: 'Клуб', owner_id: 'owner', owner_name: 'Власник', members_count: 3,
     archived_at: '2026-11-11', created_at: '2026-11-01', description: 'Опис' }]

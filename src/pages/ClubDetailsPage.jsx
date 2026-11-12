@@ -12,6 +12,7 @@ import { genreColor } from '../domain/genreColor.js'
 import NotFoundPage from './NotFoundPage.jsx'
 import { isSupabaseData } from '../services/dataSource.js'
 import LeaveClubButton from '../components/clubs/LeaveClubButton.jsx'
+import RestoreClubButton from '../components/clubs/RestoreClubButton.jsx'
 import { formatMeetingTime, localDateTime } from '../domain/meetingValidation.js'
 
 export default function ClubDetailsPage() {
@@ -157,6 +158,7 @@ export default function ClubDetailsPage() {
             )}
             {isSupabaseData && (club.isMember || canManage) && <Link to={`/clubs/${club.id}/members`} className="link-inline">Учасники клубу</Link>}
             {isSupabaseData && canManage && <Link to={`/clubs/${club.id}/requests`} className="link-inline">Вхідні заявки</Link>}
+            {isSupabaseData && canManage && <RestoreClubButton key={club.id + user.id} club={club} />}
             {canManage && !club.archivedAt && (
               <>
                 <Link to={`/clubs/${encodeURIComponent(club.id)}/edit`} className="link-button link-button-secondary">

@@ -50,6 +50,7 @@ export const adminService = {
     }
   },
   archive: (id) => read('archive_club', { p_id: id }),
+  restore: (id) => read('restore_club', { p_id: id }),
 }
 async function read(name, args, signal) {
   let query = getSupabase().rpc(name, args)

@@ -33,6 +33,7 @@ export const clubService = {
   async create(values) { return mapClub(await unwrap(getSupabase().rpc('create_club', { p_input: input(values) }))) },
   async update(id, values) { return mapClub(await unwrap(getSupabase().rpc('update_club', { p_id: id, p_input: input(values) }))) },
   async archive(id) { await unwrap(getSupabase().rpc('archive_club', { p_id: id })) },
+  async restore(id) { await unwrap(getSupabase().rpc('restore_club', { p_id: id })) },
   async getMembers(id, { signal } = {}) {
     let query = getSupabase().rpc('list_club_members', { p_club: id })
     if (signal) query = query.abortSignal(signal)

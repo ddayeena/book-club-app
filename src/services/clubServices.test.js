@@ -42,6 +42,13 @@ test('архівування викликає RPC, не фізичне вида�
   expect(client.rpc).toHaveBeenCalledWith('archive_club', { p_id: 'remote-club' })
 })
 
+test('відновлення викликає вузький RPC і передає помилки доступу', async () => {
+  await clubService.restore('remote-club')
+  expect(client.rpc).toHaveBeenCalledWith('restore_club', { p_id: 'remote-club' })
+  response = { data: null, error: { code: '42501' } }
+  await expect(clubService.restore('remote-club')).rejects.toMatchObject({ code: '42501' })
+})
+
 test('форма клубу не передає окрему дату до RPC', async () => {
   await clubService.create({ ...ownClub, nextMeeting: '' })
   expect(client.rpc.mock.calls[0][1].p_input).not.toHaveProperty('next_meeting')

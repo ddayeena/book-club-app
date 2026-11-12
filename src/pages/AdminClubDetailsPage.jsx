@@ -15,14 +15,22 @@ function ClubDetails({ clubId }) {
   const resource = useAdminResource(load)
   const [confirming, setConfirming] = useState(false)
   const opener = useRef(null)
+  const heading = useRef(null)
   const club = resource.data
   function close() { setConfirming(false); requestAnimationFrame(() => opener.current?.querySelector('button')?.focus()) }
   async function archive() {
-    if (await resource.run(() => adminService.archive(club.id), 'Клуб архівовано.')) close()
+    if (await resource.run(() => adminService.archive(club.id), 'Клуб архівовано.')) {
+      setConfirming(false); heading.current?.focus()
+    }
+  }
+  async function restore() {
+    if (await resource.run(() => adminService.restore(club.id), 'Клуб відновлено.')) {
+      setConfirming(false); heading.current?.focus()
+    }
   }
   return <>
     <Link className="admin-back-link" to={`/admin/clubs${location.search}`}>← До списку клубів</Link>
-    <div className="admin-club-title"><PageHeading title={club?.name ?? 'Деталі клубу'} />
+    <div className="admin-club-title" ref={heading} tabIndex={-1}><PageHeading title={club?.name ?? 'Деталі клубу'} />
       {club && !resource.loading && <span className={`admin-status${club.archivedAt ? ' admin-status-archived' : ''}`}>{club.archivedAt ? 'Архівний' : 'Активний'}</span>}
     </div>
     <AdminFeedback resource={resource} />
@@ -56,9 +64,12 @@ function ClubDetails({ clubId }) {
         <section className="admin-detail-card admin-club-actions" aria-label="Адміністративні дії"><h2>Адміністративні дії</h2>
           <p className="field-hint">{club.archivedAt ? 'Клуб архівовано. Його дані та історія збережені.' : 'Архівування збереже історію клубу, відхилить очікувані заявки та скасує незавершене голосування.'}</p>
           <div className="form-actions"><Link to={`/clubs/${club.id}`}>Переглянути на сайті</Link>
-            {!club.archivedAt && <span ref={opener}><AppButton variant="secondary" disabled={resource.busy} onClick={() => setConfirming(true)}>Архівувати клуб</AppButton></span>}</div>
+            <span ref={opener}><AppButton variant="secondary" disabled={resource.busy} onClick={() => setConfirming(true)}>{club.archivedAt ? 'Відновити клуб' : 'Архівувати клуб'}</AppButton></span></div>
           {confirming && !club.archivedAt && <AdminConfirmation title="Архівувати клуб?" busy={resource.busy} onCancel={close} onConfirm={() => void archive()}>
             <p><strong>{club.name}</strong></p><p>Клуб залишиться в історії. Очікувані заявки буде відхилено, незавершене голосування — скасовано.</p>
+          </AdminConfirmation>}
+          {confirming && club.archivedAt && <AdminConfirmation title="Відновити клуб?" busy={resource.busy} onCancel={close} onConfirm={() => void restore()}>
+            <p>Клуб знову стане активним і доступним у каталозі. Раніше скасовані зустрічі та голосування автоматично не відновляться.</p>
           </AdminConfirmation>}
         </section>
       </div>

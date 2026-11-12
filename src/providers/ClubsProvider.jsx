@@ -15,7 +15,7 @@ function RemoteClubsProvider({ children }) {
   const version = useRef(0)
   const lock = useRef(false)
   const alive = useRef(false)
-  const reload = useCallback(async (preserve = false) => {
+  const reload = useCallback(async (preserve = false, failureMessage = '') => {
     read.current?.abort()
     const controller = new AbortController()
     read.current = controller
@@ -28,7 +28,7 @@ function RemoteClubsProvider({ children }) {
       setClubs(records); setStatus('success')
     } catch (cause) {
       if (controller.signal.aborted || ticket !== version.current) return
-      setError(errorMessage(cause)); setStatus('error')
+      setError(failureMessage || errorMessage(cause)); setStatus('error')
     }
   }, [])
   useEffect(() => {
@@ -36,12 +36,12 @@ function RemoteClubsProvider({ children }) {
     void Promise.resolve().then(() => { if (alive.current) void reload() })
     return () => { alive.current = false; read.current?.abort(); version.current += 1 }
   }, [reload])
-  async function mutate(operation) {
+  async function mutate(operation, refreshFailureMessage = '') {
     if (lock.current) return { ok: false, message: 'Дочекайтеся завершення операції.' }
     lock.current = true; setIsMutating(true)
     try {
       const club = await operation()
-      if (alive.current) await reload(true)
+      if (alive.current) await reload(true, refreshFailureMessage)
       return { ok: true, club }
     } catch (cause) { return { ok: false, message: errorMessage(cause), errors: cause.errors } }
     finally { lock.current = false; if (alive.current) setIsMutating(false) }
@@ -50,6 +50,7 @@ function RemoteClubsProvider({ children }) {
     createClub: (input) => mutate(() => clubService.create(input)),
     updateClub: (id, input) => mutate(() => clubService.update(id, input)),
     deleteClub: (id) => mutate(() => clubService.archive(id)),
+    restoreClub: (id) => mutate(() => clubService.restore(id), 'Клуб відновлено, але не вдалося оновити дані. Повторіть завантаження.'),
   }}>{children}</ClubsContext.Provider>
 }
 export default function ClubsProvider({ children }) {
