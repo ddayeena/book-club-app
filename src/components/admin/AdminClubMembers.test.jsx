@@ -69,8 +69,11 @@ test('show more appends one page, avoids duplicate requests and focuses newly ad
   resolve({ items: [{ id: '20', name: 'Учасник 20' }], hasMore: false })
   const next = await screen.findByRole('link', { name: 'Учасник 20' })
   expect(screen.getAllByRole('listitem')).toHaveLength(21)
-  expect(next).toHaveFocus()
+  // DOM insertion can precede the passive effect that moves keyboard focus.
+  await waitFor(() => expect(next).toHaveFocus())
   expect(screen.queryByRole('button', { name: 'Показати більше' })).not.toBeInTheDocument()
+  await userEvent.keyboard('{Enter}')
+  expect(await screen.findByRole('heading', { name: 'Профіль: 20' })).toBeInTheDocument()
 })
 test('failed next page keeps loaded members and retries the same offset', async () => {
   adminService.members.mockResolvedValueOnce({ items: [owner], hasMore: true })

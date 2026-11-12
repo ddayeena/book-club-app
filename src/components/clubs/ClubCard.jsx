@@ -7,7 +7,7 @@ import { clubFormatOptions, optionLabel } from '../../domain/options.js'
 import { formatMeetingDate } from '../../domain/dates.js'
 import { genreColor } from '../../domain/genreColor.js'
 
-export default function ClubCard({ club, selected, onSelect, isOwn = false }) {
+export default function ClubCard({ club, selected, onSelect, isOwn = false, showSelection = true }) {
   const [detailsOpen, setDetailsOpen] = useState(false)
   const descriptionId = `club-${club.id}-description`
   const color = genreColor(club.genre)
@@ -67,10 +67,10 @@ export default function ClubCard({ club, selected, onSelect, isOwn = false }) {
         >
           {detailsOpen ? 'Згорнути опис' : 'Показати опис'}
         </AppButton>
-        <AppButton variant="secondary" aria-pressed={selected} onClick={() => onSelect(club.id)}>
+        {showSelection && <AppButton variant="secondary" aria-pressed={selected} onClick={() => onSelect(club.id)}>
           Обрати «{club.name}»
-        </AppButton>
-        {selected && <p className="selection-note">Обрано для заявки.</p>}
+        </AppButton>}
+        {showSelection && selected && <p className="selection-note">Обрано для заявки.</p>}
       </div>
     </article>
   )

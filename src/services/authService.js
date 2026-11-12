@@ -38,7 +38,7 @@ export async function getSessionUser(session) {
   if (access.data.is_blocked) throw new ServiceError('Обліковий запис заблоковано.', { code: 'BLOCKED' })
   if (!['user', 'admin'].includes(access.data.role)) throw new ServiceError('Невідомі права доступу.', { code: 'ACCESS' })
   return { id, name: profile.data.name, email: session.user.email, role: access.data.role,
-    remindersEnabled: profile.data.reminders_enabled, avatarPath: profile.data.avatar_path }
+    remindersEnabled: profile.data.reminders_enabled, avatarPath: profile.data.avatar_path, registeredAt: session.user.created_at }
 }
 function validate(input, validator) {
   const result = validator(input)

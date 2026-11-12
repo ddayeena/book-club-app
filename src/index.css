@@ -827,3 +827,23 @@ button[aria-pressed="true"].app-button { background: #141b2b; color: #ffffff; bo
 .admin-member-list a { min-width: 0; overflow-wrap: anywhere; }
 .admin-member-owner { color: #752a3b; background: #f3e6d3; font-size: .8rem; padding: .15rem .5rem; border-radius: .3rem; }
 .admin-members-empty { margin-top: 1rem; color: #62545a; }
+.personal-page { color: #1c2433; }
+.personal-nav { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; margin-block: 1rem 1.5rem; }
+.personal-nav a { color: #752a3b; font-weight: 600; }
+.profile-card { max-width: 52rem; padding: clamp(1rem, 3vw, 2rem); background: #fffdf8; border: 1px solid #ddd4c9; border-radius: .8rem; }
+.profile-registration { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: 1.5rem; color: #62545a; font-size: .9rem; }
+.user-avatar { display: inline-grid; place-items: center; flex-shrink: 0; width: 2.2rem; height: 2.2rem; border-radius: 50%; background: #752a3b; color: #fffdf8; font-weight: 650; overflow: hidden; }
+.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.user-avatar-large, .profile-preview { width: 7rem; height: 7rem; border-radius: 50%; font-size: 2rem; object-fit: cover; }
+.profile-photo { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.5rem; padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid #e4d7c7; }
+.profile-photo h2, .profile-reminders h2 { font-size: 1.2rem; margin-bottom: .5rem; }
+.profile-photo input[type="file"] { display: block; width: 100%; max-width: 100%; margin-block: .5rem; color: #62545a; }
+.profile-file-label { display: block; margin-top: .75rem; font-weight: 600; }
+.profile-reminders { padding-top: 1rem; }
+.profile-form .app-button-primary { background: #752a3b; }
+.profile-form .app-button-primary:hover:not(:disabled) { background: #54202e; }
+.my-clubs-section { margin-block: 2rem; }
+.my-clubs-section h2 { margin-bottom: 1rem; }
+.my-clubs-list { list-style: none; padding: 0; display: grid; gap: 1rem; }
+.personal-count { font: 400 .9rem system-ui, sans-serif; color: #62545a; }
+@media (max-width: 550px) { .profile-photo { grid-template-columns: minmax(0, 1fr); gap: 1rem; } }

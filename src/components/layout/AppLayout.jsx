@@ -10,20 +10,21 @@ import ClubsGate from '../clubs/ClubsGate.jsx'
 function Shell() {
   const { user } = useAuth()
   const location = useLocation()
+  const profilePage = /^\/profile\/?$/.test(location.pathname)
 
   return (
     <div className="site">
       <SiteHeader />
       {/* Інший користувач означає іншу колекцію заявок, тому провайдер створюється заново. */}
-      <RequestsProvider key={user?.id ?? 'guest'}>
+      <ContentProviders profilePage={profilePage} userId={user?.id ?? 'guest'}>
         <main id="main-content" tabIndex={-1}>
           <ErrorBoundary resetKey={location.pathname}>
-            {['/login', '/register', '/logout'].includes(location.pathname)
+            {profilePage || location.pathname.replace(/\/$/, '') === '/my-clubs' || ['/login', '/register', '/logout'].includes(location.pathname)
               ? <Outlet />
               : <ClubsGate><Outlet /></ClubsGate>}
           </ErrorBoundary>
         </main>
-      </RequestsProvider>
+      </ContentProviders>
       <footer className="site-footer">
         <div className="site-footer-inner">
           <p>ReadHub. Навчальний проєкт: клуби, заявки, обговорення.</p>
@@ -39,5 +40,10 @@ function Shell() {
 }
 
 export default function AppLayout() {
+  const { pathname } = useLocation()
+  if (/^\/profile\/?$/.test(pathname)) return <Shell />
   return <ClubsProvider><ClubSelectionProvider><Shell /></ClubSelectionProvider></ClubsProvider>
+}
+function ContentProviders({ profilePage, userId, children }) {
+  return profilePage ? children : <RequestsProvider key={userId}>{children}</RequestsProvider>
 }

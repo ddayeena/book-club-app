@@ -61,6 +61,9 @@ Mock залишено для автоматичних тестів; відмов
 - [Книжкова полиця: міграція 005 та перевірки](docs/supabase-books-setup.md).
 - [Голосування: міграція 006, права та перевірки](docs/supabase-polls-setup.md).
 - [Адмінпанель: міграція 007, права та ручні перевірки](docs/supabase-admin-setup.md).
+- [Особистий профіль, мої клуби та приватні аватари: міграція 008](docs/supabase-profile-setup.md).
+- `/profile`, `/my-clubs` — особисті дані, налаштування нагадувань та власні/учасницькі клуби.
+- `supabase/tests/profile_avatars.test.sql` — pgTAP-тести профілю та Storage-політик для одноразової тестової БД.
 - `/admin`, `/admin/users`, `/admin/clubs` — статистика, користувачі та архівування клубів; тільки для активного admin.
 - `supabase/tests/admin_panel.test.sql` — pgTAP-тести адміністративних RPC для одноразової тестової БД.
 - `supabase/tests/auth_rls.test.sql`, `club_lifecycle.test.sql`, `club_books.test.sql`, `book_polls.test.sql` — pgTAP-тести для одноразової тестової БД.

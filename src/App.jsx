@@ -26,6 +26,8 @@ import AdminClubsPage from './pages/AdminClubsPage.jsx'
 import SessionLayout from './components/layout/SessionLayout.jsx'
 import AdminClubDetailsPage from './pages/AdminClubDetailsPage.jsx'
 import AdminUserDetailsPage from './pages/AdminUserDetailsPage.jsx'
+import ProfilePage from './pages/ProfilePage.jsx'
+import MyClubsPage from './pages/MyClubsPage.jsx'
 
 export default function App() {
   return (
@@ -52,6 +54,8 @@ export default function App() {
         </Route>
 
         <Route element={<RequireAuth />}>
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="my-clubs" element={<MyClubsPage />} />
           <Route path="requests" element={<RequestsLayout />}>
             <Route index element={<RequestsPage />} />
             <Route path="new" element={<RequestCreatePage />} />

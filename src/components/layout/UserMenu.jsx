@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router'
 import useAuth from '../../hooks/useAuth.js'
-import { initials } from '../../domain/people.js'
+import UserAvatar from '../profile/UserAvatar.jsx'
 import { useEffect, useRef, useState } from 'react'
 
 export default function UserMenu() {
@@ -34,9 +34,11 @@ export default function UserMenu() {
       }}>
         <button type="button" className="profile-trigger" aria-label="Меню профілю" aria-expanded={profileOpen}
           aria-controls="profile-menu-panel" onClick={() => setProfileOpen((value) => !value)}>
-          <span className="avatar" aria-hidden="true">{initials(user.name)}</span>
+          <UserAvatar user={user} />
           <span className="user-name">{user.name}</span><span aria-hidden="true">⌄</span></button>
         {profileOpen && <div id="profile-menu-panel" className="profile-menu-panel"><p>Користувач ReadHub</p>
+          <Link to="/profile" onClick={() => setProfileOpen(false)}>Мій профіль</Link>
+          <Link to="/my-clubs" onClick={() => setProfileOpen(false)}>Мої клуби</Link>
         </div>}
       </div>
       <button type="button" className="text-button" onClick={handleLogout}>
