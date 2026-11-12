@@ -60,6 +60,9 @@ Mock залишено для автоматичних тестів; відмов
 - [Клуби, заявки, учасники: налаштування й перевірки](docs/supabase-clubs-setup.md).
 - [Книжкова полиця: міграція 005 та перевірки](docs/supabase-books-setup.md).
 - [Голосування: міграція 006, права та перевірки](docs/supabase-polls-setup.md).
+- [Адмінпанель: міграція 007, права та ручні перевірки](docs/supabase-admin-setup.md).
+- `/admin`, `/admin/users`, `/admin/clubs` — статистика, користувачі та архівування клубів; тільки для активного admin.
+- `supabase/tests/admin_panel.test.sql` — pgTAP-тести адміністративних RPC для одноразової тестової БД.
 - `supabase/tests/auth_rls.test.sql`, `club_lifecycle.test.sql`, `club_books.test.sql`, `book_polls.test.sql` — pgTAP-тести для одноразової тестової БД.
 - `src/services/supabaseAuthService.test.js`, `src/providers/AuthProvider.test.jsx` — новий Auth.
 - `src/services/localAuthIsolation.test.js` — ізоляція локальних заявок.

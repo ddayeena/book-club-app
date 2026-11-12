@@ -1,12 +1,10 @@
 import { Link, Outlet, useLocation } from 'react-router'
 import SiteHeader from './SiteHeader.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
-import AuthProvider from '../../providers/AuthProvider.jsx'
 import ClubsProvider from '../../providers/ClubsProvider.jsx'
 import ClubSelectionProvider from '../../providers/ClubSelectionProvider.jsx'
 import RequestsProvider from '../../providers/RequestsProvider.jsx'
 import useAuth from '../../hooks/useAuth.js'
-import AuthGate from '../auth/AuthGate.jsx'
 import ClubsGate from '../clubs/ClubsGate.jsx'
 
 function Shell() {
@@ -41,15 +39,5 @@ function Shell() {
 }
 
 export default function AppLayout() {
-  return (
-    <AuthProvider>
-      <AuthGate>
-        <ClubsProvider>
-          <ClubSelectionProvider>
-            <Shell />
-          </ClubSelectionProvider>
-        </ClubsProvider>
-      </AuthGate>
-    </AuthProvider>
-  )
+  return <ClubsProvider><ClubSelectionProvider><Shell /></ClubSelectionProvider></ClubsProvider>
 }

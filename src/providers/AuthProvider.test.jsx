@@ -11,6 +11,7 @@ import * as service from '../services/authService.js'
 import { deferred } from '../test/deferred.js'
 import { ServiceError } from '../services/ServiceError.js'
 import { StrictMode } from 'react'
+import RequireAdmin from '../components/auth/RequireAdmin.jsx'
 
 vi.mock('../services/authService.js', () => ({
   getSession: vi.fn(), getSessionUser: vi.fn(), subscribe: vi.fn(), setActiveUser: vi.fn(),
@@ -32,6 +33,33 @@ function Probe() {
   const { user } = useAuth()
   return <p>Особа: {user?.id ?? 'guest'}</p>
 }
+
+function AccessProbe() {
+  const { user, refreshAccess } = useAuth()
+  return <><p>Роль: {user?.role}</p><button onClick={() => void refreshAccess()}>Перечитати права</button></>
+}
+test('admin F5 restores DB role; preserved access refresh removes admin routes after demotion', async () => {
+  service.getSession.mockResolvedValue(session)
+  service.getSessionUser.mockResolvedValue({ id: 'a', name: 'Admin', role: 'admin' })
+  render(<MemoryRouter initialEntries={['/admin']}><AuthProvider><AuthGate><Routes>
+    <Route element={<RequireAdmin />}><Route path="admin" element={<AccessProbe />} /></Route>
+  </Routes></AuthGate></AuthProvider></MemoryRouter>)
+  await screen.findByText('Роль: admin')
+  service.getSessionUser.mockResolvedValue({ id: 'a', name: 'Admin', role: 'user' })
+  await userEvent.click(screen.getByRole('button', { name: 'Перечитати права' }))
+  await screen.findByText('Немає доступу')
+  expect(service.login).not.toHaveBeenCalled()
+})
+test('access refresh reports blocked account through the existing AuthGate', async () => {
+  service.getSession.mockResolvedValue(session)
+  service.getSessionUser.mockResolvedValue({ id: 'a', name: 'Admin', role: 'admin' })
+  render(<AuthProvider><AuthGate><AccessProbe /></AuthGate></AuthProvider>)
+  await screen.findByText('Роль: admin')
+  service.getSessionUser.mockRejectedValue(new ServiceError('Обліковий запис заблоковано.', { code: 'BLOCKED' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Перечитати права' }))
+  expect(await screen.findByRole('alert')).toHaveTextContent('Обліковий запис заблоковано.')
+  expect(screen.queryByText('Роль: admin')).not.toBeInTheDocument()
+})
 function mount(path = '/private') {
   return render(<MemoryRouter initialEntries={[path]}><AuthProvider><AuthGate><Routes>
     <Route path="login" element={<AuthPage mode="login" />} />

@@ -28,6 +28,7 @@ export default function AuthProvider({ children }) {
     }
   }, [])
   const retry = useCallback(() => restore(authService.getSession), [restore])
+  const refreshAccess = useCallback(() => restore(authService.getSession, true), [restore])
   useEffect(() => {
     alive.current = true
     let subscription
@@ -84,7 +85,7 @@ export default function AuthProvider({ children }) {
     } catch (cause) { return { ok: false, message: errorMessage(cause) } }
   }, [])
   return (
-    <AuthContext.Provider value={{ ...state, retry, login: (input) => run(() => authService.login(input)), register: (input) => run(() => authService.register(input)), logout }}>
+    <AuthContext.Provider value={{ ...state, retry, refreshAccess, login: (input) => run(() => authService.login(input)), register: (input) => run(() => authService.register(input)), logout }}>
       {children}
     </AuthContext.Provider>
   )

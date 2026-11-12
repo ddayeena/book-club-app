@@ -18,10 +18,19 @@ import ClubRequestsPage from './pages/ClubRequestsPage.jsx'
 import ClubBooksPage from './pages/ClubBooksPage.jsx'
 import ClubPollsPage from './pages/ClubPollsPage.jsx'
 import ClubPollPage from './pages/ClubPollPage.jsx'
+import RequireAdmin from './components/auth/RequireAdmin.jsx'
+import AdminLayout from './components/layout/AdminLayout.jsx'
+import AdminDashboardPage from './pages/AdminDashboardPage.jsx'
+import AdminUsersPage from './pages/AdminUsersPage.jsx'
+import AdminClubsPage from './pages/AdminClubsPage.jsx'
+import SessionLayout from './components/layout/SessionLayout.jsx'
+import AdminClubDetailsPage from './pages/AdminClubDetailsPage.jsx'
+import AdminUserDetailsPage from './pages/AdminUserDetailsPage.jsx'
 
 export default function App() {
   return (
     <Routes>
+      <Route element={<SessionLayout />}>
       <Route element={<AppLayout />}>
         <Route index element={<HomePage />} />
         <Route path="login" element={<AuthPage mode="login" />} />
@@ -52,6 +61,16 @@ export default function App() {
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />
+      </Route>
+      <Route element={<RequireAdmin />}>
+        <Route path="admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboardPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="users/:userId" element={<AdminUserDetailsPage />} />
+          <Route path="clubs" element={<AdminClubsPage />} />
+          <Route path="clubs/:clubId" element={<AdminClubDetailsPage />} />
+        </Route>
+      </Route>
       </Route>
     </Routes>
   )
