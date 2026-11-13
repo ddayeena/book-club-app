@@ -1,8 +1,8 @@
-import { clubs } from '../data/clubs.js'
+import { listAllClubs } from '../data/clubCatalog.js'
 import { validateRequest } from '../domain/requestValidation.js'
 import { ServiceError } from './ServiceError.js'
 
-export function toRequestInput(input) {
+export function toRequestInput(input, clubs = listAllClubs()) {
   const result = validateRequest(input, clubs)
   if (!result.ok) {
     throw new ServiceError('Перевірте поля заявки.', {
@@ -22,6 +22,11 @@ export function toRequest(value) {
     && typeof value.motivation === 'string'
     && Number.isInteger(value.weeklyHours)
     && typeof value.wantsReminders === 'boolean'
+    && typeof value.experience === 'string'
+    && typeof value.participationFormat === 'string'
+    && typeof value.contactEmail === 'string'
+    && typeof value.ownerId === 'string'
+    && typeof value.createdAt === 'string'
 
   if (!valid) {
     throw new ServiceError('Джерело повернуло некоректний запис заявки.', {
@@ -35,6 +40,11 @@ export function toRequest(value) {
     motivation: value.motivation,
     weeklyHours: value.weeklyHours,
     wantsReminders: value.wantsReminders,
+    experience: value.experience,
+    participationFormat: value.participationFormat,
+    contactEmail: value.contactEmail,
+    ownerId: value.ownerId,
+    createdAt: value.createdAt,
   }
 }
 

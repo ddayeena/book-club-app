@@ -5,8 +5,8 @@ import RequestsGate from '../requests/RequestsGate.jsx'
 export default function RequestsLayout() {
   return (
     <>
-      <nav aria-label="Навігація розділом заявок">
-        <ul className="nav-list">
+      <nav className="subnav" aria-label="Навігація розділом заявок">
+        <ul>
           <li><NavLink to="." end>Список заявок</NavLink></li>
           <li><NavLink to="new">Нова заявка</NavLink></li>
         </ul>

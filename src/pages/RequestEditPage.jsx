@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import useRequests from '../hooks/useRequests.js'
+import useClubs from '../hooks/useClubs.js'
 import JoinPage from './JoinPage.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 
-export default function RequestEditPage({ clubs }) {
+export default function RequestEditPage() {
+  const { clubs } = useClubs()
   const { requestId } = useParams()
   const navigate = useNavigate()
   const { requests, updateRequest } = useRequests()
@@ -28,6 +30,7 @@ export default function RequestEditPage({ clubs }) {
 
   const club = clubs.find((entry) => entry.id === request.clubId)
   if (!club) return <NotFoundPage title="Клуб заявки відсутній" />
+  if (club.archivedAt || (request.status && request.status !== 'pending')) return <NotFoundPage title="Заявка вже закрита для редагування" />
 
   async function handleSave(input) {
     const result = await updateRequest(request.id, input)
@@ -48,6 +51,9 @@ export default function RequestEditPage({ clubs }) {
         motivation: request.motivation,
         weeklyHours: request.weeklyHours,
         wantsReminders: request.wantsReminders,
+        experience: request.experience,
+        participationFormat: request.participationFormat,
+        contactEmail: request.contactEmail,
       }}
       onSave={handleSave}
       submitLabel="Зберегти зміни"

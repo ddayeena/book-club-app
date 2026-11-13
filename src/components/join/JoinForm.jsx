@@ -1,5 +1,6 @@
 import AppButton from '../ui/AppButton.jsx'
 import FormField from '../ui/FormField.jsx'
+import { experienceOptions, participationOptions } from '../../domain/options.js'
 
 export default function JoinForm({
   idPrefix, clubName, draft, errors, operationError, isSubmitting,
@@ -7,6 +8,9 @@ export default function JoinForm({
 }) {
   const motivationId = `${idPrefix}-motivation`
   const hoursId = `${idPrefix}-hours`
+  const experienceId = `${idPrefix}-experience`
+  const formatId = `${idPrefix}-format`
+  const emailId = `${idPrefix}-email`
   const remindersId = `${idPrefix}-reminders`
   const hasErrors = Object.keys(errors).length > 0
 
@@ -52,27 +56,94 @@ export default function JoinForm({
           />
         </FormField>
 
-        <FormField
-          id={hoursId}
-          label="Годин на тиждень для клубу (обов'язково)"
-          hint="Ціле число від 1 до 8."
-          error={errors.weeklyHours}
-        >
-          <input
+        <div className="form-grid">
+          <FormField
             id={hoursId}
-            name="weeklyHours"
-            type="number"
-            min={1}
-            max={8}
-            step={1}
-            required
-            value={draft.weeklyHours}
-            onChange={(event) => onChange('weeklyHours', event.target.value)}
-            onBlur={() => onBlur('weeklyHours')}
-            aria-invalid={Boolean(errors.weeklyHours)}
-            aria-describedby={describedBy(hoursId, errors.weeklyHours)}
-          />
-        </FormField>
+            label="Годин на тиждень"
+            hint="Обов'язково. Ціле число від 1 до 8."
+            error={errors.weeklyHours}
+          >
+            <input
+              id={hoursId}
+              name="weeklyHours"
+              type="number"
+              min={1}
+              max={8}
+              step={1}
+              required
+              value={draft.weeklyHours}
+              onChange={(event) => onChange('weeklyHours', event.target.value)}
+              onBlur={() => onBlur('weeklyHours')}
+              aria-invalid={Boolean(errors.weeklyHours)}
+              aria-describedby={describedBy(hoursId, errors.weeklyHours)}
+            />
+          </FormField>
+
+          <FormField
+            id={experienceId}
+            label="Досвід читання"
+            hint="Обов'язково. Допоможе підібрати темп обговорень."
+            error={errors.experience}
+          >
+            <select
+              id={experienceId}
+              name="experience"
+              value={draft.experience}
+              onChange={(event) => onChange('experience', event.target.value)}
+              onBlur={() => onBlur('experience')}
+              aria-invalid={Boolean(errors.experience)}
+              aria-describedby={describedBy(experienceId, errors.experience)}
+            >
+              {experienceOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </FormField>
+
+          <FormField
+            id={formatId}
+            label="Бажаний формат участі"
+            hint="Обов'язково. Онлайн, офлайн або без різниці."
+            error={errors.participationFormat}
+          >
+            <select
+              id={formatId}
+              name="participationFormat"
+              value={draft.participationFormat}
+              onChange={(event) => onChange('participationFormat', event.target.value)}
+              onBlur={() => onBlur('participationFormat')}
+              aria-invalid={Boolean(errors.participationFormat)}
+              aria-describedby={describedBy(formatId, errors.participationFormat)}
+            >
+              {participationOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </FormField>
+
+          <FormField
+            id={emailId}
+            label="Контактна пошта"
+            hint="Необов'язково. Для відповіді клубу."
+            error={errors.contactEmail}
+          >
+            <input
+              id={emailId}
+              name="contactEmail"
+              type="email"
+              autoComplete="email"
+              value={draft.contactEmail}
+              onChange={(event) => onChange('contactEmail', event.target.value)}
+              onBlur={() => onBlur('contactEmail')}
+              aria-invalid={Boolean(errors.contactEmail)}
+              aria-describedby={describedBy(emailId, errors.contactEmail)}
+            />
+          </FormField>
+        </div>
 
         <div>
           <label className="checkbox-field" htmlFor={remindersId}>

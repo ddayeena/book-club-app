@@ -4,10 +4,12 @@ import PageHeading from '../components/ui/PageHeading.jsx'
 import EmptyState from '../components/ui/EmptyState.jsx'
 import useClubSelection from '../hooks/useClubSelection.js'
 import useRequests from '../hooks/useRequests.js'
+import useClubs from '../hooks/useClubs.js'
 import JoinPage from './JoinPage.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 
-export default function RequestCreatePage({ clubs }) {
+export default function RequestCreatePage() {
+  const { clubs } = useClubs()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { selectedId, clearSelection } = useClubSelection()
@@ -28,8 +30,10 @@ export default function RequestCreatePage({ clubs }) {
       <>
         <PageHeading title="Нова заявка" />
         <EmptyState title="Спочатку виберіть клуб.">
-          <p><Link to="/clubs">Відкрити каталог</Link></p>
-          {search && <p><Link to={search}>Використати останній вибір</Link></p>}
+          <p><Link to="/clubs" className="link-inline">Відкрити каталог</Link></p>
+          {search && (
+            <p><Link to={search} className="link-inline">Використати останній вибір</Link></p>
+          )}
         </EmptyState>
       </>
     )
@@ -39,6 +43,7 @@ export default function RequestCreatePage({ clubs }) {
   if (!club) {
     return <NotFoundPage title="Клуб нової заявки не знайдено" />
   }
+  if (club.archivedAt || club.isMember) return <NotFoundPage title="Заявка недоступна: клуб архівовано або ви вже учасник" />
 
   async function handleSave(input) {
     const result = await createRequest(input)

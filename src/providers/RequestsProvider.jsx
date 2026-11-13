@@ -2,10 +2,18 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { RequestsContext } from '../context/RequestsContext.js'
 import { requestService } from '../services/requestService.js'
 import { errorMessage } from '../services/ServiceError.js'
+import useAuth from '../hooks/useAuth.js'
+import { isSupabaseData } from '../services/dataSource.js'
 
-export default function RequestsProvider({ children }) {
+export default function RequestsProvider({ children, enabled = true }) {
+  const { user } = useAuth()
+  return <AccountRequests key={user?.id ?? 'guest'} userId={user?.id} enabled={enabled}>{children}</AccountRequests>
+}
+
+function AccountRequests({ children, userId, enabled }) {
   const [requests, setRequests] = useState([])
-  const [status, setStatus] = useState('loading')
+  // Гість не має заявок: читати нічого, тому стан одразу «успішний» і порожній.
+  const [status, setStatus] = useState(userId ? 'loading' : 'success')
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [isMutating, setIsMutating] = useState(false)
@@ -13,37 +21,54 @@ export default function RequestsProvider({ children }) {
   const readVersion = useRef(0)
   const mutationLock = useRef(false)
   const mounted = useRef(false)
+  const started = useRef(false)
 
-  const reload = useCallback(async () => {
-    if (mutationLock.current) return
+  const load = useCallback(() => {
     activeRead.current?.abort()
     const controller = new AbortController()
     activeRead.current = controller
     const version = ++readVersion.current
+    const isStale = () => controller.signal.aborted || version !== readVersion.current
+
+    return requestService.getAll({ signal: controller.signal }).then(
+      (records) => {
+        if (isStale()) return
+        setRequests(records)
+        setStatus('success')
+      },
+      (cause) => {
+        if (isStale()) return
+        setError(errorMessage(cause))
+        setStatus('error')
+      },
+    )
+  }, [])
+
+  const reload = useCallback(() => {
+    if (!userId || mutationLock.current) return Promise.resolve()
     setStatus('loading')
     setError('')
+    return load()
+  }, [load, userId])
 
-    try {
-      const records = await requestService.getAll({ signal: controller.signal })
-      if (controller.signal.aborted || version !== readVersion.current) return
-      setRequests(records)
-      setStatus('success')
-    } catch (cause) {
-      if (controller.signal.aborted || version !== readVersion.current) return
-      setError(errorMessage(cause))
-      setStatus('error')
+  useEffect(() => {
+    mounted.current = true
+    return () => {
+      mounted.current = false
+      started.current = false
+      activeRead.current?.abort()
+      readVersion.current += 1
     }
   }, [])
 
   useEffect(() => {
-    mounted.current = true
-    void reload()
-    return () => {
-      mounted.current = false
-      activeRead.current?.abort()
-      readVersion.current += 1
+    if (userId && enabled && !started.current) {
+      started.current = true
+      void load()
     }
-  }, [reload])
+    // Let an existing read finish when navigating to a page without consumers.
+    // Account changes unmount this keyed instance and abort its read.
+  }, [enabled, load, userId])
 
   async function mutate(operation, apply, message) {
     if (mutationLock.current || status !== 'success') {
@@ -94,8 +119,8 @@ export default function RequestsProvider({ children }) {
   function deleteRequest(id) {
     return mutate(
       () => requestService.delete(id),
-      (previous) => previous.filter((entry) => entry.id !== id),
-      'Заявку видалено.',
+      (previous, record) => isSupabaseData ? previous.map((entry) => entry.id === id ? record : entry) : previous.filter((entry) => entry.id !== id),
+      isSupabaseData ? 'Заявку скасовано.' : 'Заявку видалено.',
     )
   }
 

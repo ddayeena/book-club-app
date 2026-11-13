@@ -6,11 +6,13 @@ export default function NotFoundPage({
   message = 'Перевірте адресу або перейдіть до каталогу.',
 }) {
   return (
-    <>
+    <div className="narrow">
       <PageHeading title={title} />
-      <p>{message}</p>
-      <p><Link to="/clubs">Відкрити каталог</Link></p>
-      <p><Link to="/">На головну</Link></p>
-    </>
+      <p className="page-lead">{message}</p>
+      <div className="page-toolbar">
+        <Link to="/clubs" className="link-button">Відкрити каталог</Link>
+        <Link to="/" className="link-inline">На головну</Link>
+      </div>
+    </div>
   )
 }

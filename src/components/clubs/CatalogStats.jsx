@@ -1,21 +1,20 @@
 export default function CatalogStats({ clubs }) {
   const readingNow = clubs.filter((club) => club.currentBook).length
   const totalMembers = clubs.reduce((sum, club) => sum + club.membersCount, 0)
+  const items = [
+    { value: clubs.length, label: 'Клубів у каталозі' },
+    { value: readingNow, label: 'Читають книгу зараз' },
+    { value: totalMembers, label: 'Учасників разом' },
+  ]
 
   return (
-    <div className="catalog-stats">
-      <div className="stat-card">
-        <span className="stat-number">{clubs.length}</span>
-        <span className="stat-label">Клубів у каталозі</span>
-      </div>
-      <div className="stat-card">
-        <span className="stat-number">{readingNow}</span>
-        <span className="stat-label">Читають книгу зараз</span>
-      </div>
-      <div className="stat-card">
-        <span className="stat-number">{totalMembers}</span>
-        <span className="stat-label">Учасників разом</span>
-      </div>
-    </div>
+    <dl className="stat-strip">
+      {items.map((item) => (
+        <div key={item.label} className="stat">
+          <dt>{item.label}</dt>
+          <dd>{item.value}</dd>
+        </div>
+      ))}
+    </dl>
   )
 }

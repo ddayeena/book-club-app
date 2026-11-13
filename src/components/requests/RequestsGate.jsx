@@ -18,7 +18,7 @@ export default function RequestsGate({ children }) {
   if (status === 'error') {
     return (
       <section className="state-banner state-error" aria-label="Помилка завантаження">
-        <span className="state-icon" aria-hidden="true">⚠️</span>
+        <span className="state-mark" aria-hidden="true">!</span>
         <p role="alert">{error}</p>
         <AppButton variant="secondary" onClick={() => void reload()}>
           Спробувати ще раз
