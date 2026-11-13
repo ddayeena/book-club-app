@@ -58,7 +58,7 @@ export default function ProfileForm({ profile, busy, onSave }) {
       </FormField>
       <section className="profile-reminders"><h2>Нагадування</h2>
         <label className="checkbox-field"><input type="checkbox" checked={draft.remindersEnabled} onChange={(e) => setDraft((d) => ({ ...d, remindersEnabled: e.target.checked }))} />Хочу отримувати нагадування</label>
-        <p className="field-hint">Зараз зберігається лише ваше налаштування. Автоматичне надсилання ще не ввімкнено.</p></section>
+        <p className="field-hint">Нагадування про зустрічі надходять у центр сповіщень ReadHub. Ви можете вмикати й вимикати їх тут, у профілі. Це внутрішні сповіщення, а не email чи push.</p></section>
       <div className="form-actions"><AppButton type="submit">{busy ? 'Збереження…' : 'Зберегти профіль'}</AppButton></div>
     </fieldset>
     {checking && <p role="status">Перевірка зображення…</p>}

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link } from 'react-router'
 import PageHeading from '../components/ui/PageHeading.jsx'
 import EmptyState from '../components/ui/EmptyState.jsx'
@@ -14,23 +13,19 @@ export default function RequestsPage() {
   const { clubs } = useClubs()
   const { requests, isMutating, reload } = useRequests()
   const filters = useRequestFilters(requests, clubs)
-  const deleteWithConfirmation = useDeleteRequest()
-  const [error, setError] = useState('')
+  const { deleteWithConfirmation, confirmation } = useDeleteRequest()
 
   const withReminders = requests.filter((request) => request.wantsReminders).length
   const averageHours = requests.length === 0
     ? 0
     : requests.reduce((sum, request) => sum + request.weeklyHours, 0) / requests.length
 
-  async function handleDelete(request) {
-    setError('')
-    const result = await deleteWithConfirmation(request)
-    if (!result.ok && !result.cancelled) setError(result.message)
-  }
+  function handleDelete(request) { deleteWithConfirmation(request) }
 
   return (
     <>
       <PageHeading title="Заявки на приєднання" />
+      {confirmation}
 
       <dl className="stat-strip">
         <div className="stat">
@@ -70,7 +65,6 @@ export default function RequestsPage() {
         onSortChange={filters.setSort}
         onReset={filters.resetFilters}
       />
-      {error && <p role="alert">{error}</p>}
       {requests.length === 0 ? (
         <EmptyState title="Заявок ще немає.">
           <p><Link to="/clubs" className="link-inline">Виберіть клуб для першої заявки</Link></p>

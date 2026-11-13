@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import PageHeading from '../components/ui/PageHeading.jsx'
 import AppButton from '../components/ui/AppButton.jsx'
@@ -19,8 +19,7 @@ export default function RequestDetailsPage() {
   const { requestId } = useParams()
   const navigate = useNavigate()
   const { requests, isMutating } = useRequests()
-  const deleteWithConfirmation = useDeleteRequest()
-  const [error, setError] = useState('')
+  const { deleteWithConfirmation, confirmation } = useDeleteRequest()
   const pageAlive = useRef(false)
 
   useEffect(() => {
@@ -32,19 +31,15 @@ export default function RequestDetailsPage() {
   if (!request) return <NotFoundPage title="Заявку не знайдено" />
   const club = clubs.find((entry) => entry.id === request.clubId)
 
-  async function handleDelete() {
+  function handleDelete() {
     if (isMutating) return
-    setError('')
-    const result = await deleteWithConfirmation(request)
-    if (!pageAlive.current) return
-    if (result.ok) navigate('/requests', { replace: true })
-    else if (!result.cancelled) setError(result.message)
+    deleteWithConfirmation(request, () => { if (pageAlive.current) navigate('/requests', { replace: true }) })
   }
 
   return (
     <>
       <PageHeading title={`Заявка ${request.id}`} />
-      {error && <p role="alert">{error}</p>}
+      {confirmation}
 
       <aside className="summary-card" aria-labelledby="request-details-title">
         <h3 id="request-details-title">Збережена заявка</h3>

@@ -5,11 +5,15 @@ import { errorMessage } from '../services/ServiceError.js'
 import useAuth from '../hooks/useAuth.js'
 import { isSupabaseData } from '../services/dataSource.js'
 
-export default function RequestsProvider({ children }) {
+export default function RequestsProvider({ children, enabled = true }) {
   const { user } = useAuth()
+  return <AccountRequests key={user?.id ?? 'guest'} userId={user?.id} enabled={enabled}>{children}</AccountRequests>
+}
+
+function AccountRequests({ children, userId, enabled }) {
   const [requests, setRequests] = useState([])
   // Гість не має заявок: читати нічого, тому стан одразу «успішний» і порожній.
-  const [status, setStatus] = useState(user ? 'loading' : 'success')
+  const [status, setStatus] = useState(userId ? 'loading' : 'success')
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [isMutating, setIsMutating] = useState(false)
@@ -17,6 +21,7 @@ export default function RequestsProvider({ children }) {
   const readVersion = useRef(0)
   const mutationLock = useRef(false)
   const mounted = useRef(false)
+  const started = useRef(false)
 
   const load = useCallback(() => {
     activeRead.current?.abort()
@@ -40,21 +45,30 @@ export default function RequestsProvider({ children }) {
   }, [])
 
   const reload = useCallback(() => {
-    if (mutationLock.current) return Promise.resolve()
+    if (!userId || mutationLock.current) return Promise.resolve()
     setStatus('loading')
     setError('')
     return load()
-  }, [load])
+  }, [load, userId])
 
   useEffect(() => {
     mounted.current = true
-    if (user) void load()
     return () => {
       mounted.current = false
+      started.current = false
       activeRead.current?.abort()
       readVersion.current += 1
     }
-  }, [load, user])
+  }, [])
+
+  useEffect(() => {
+    if (userId && enabled && !started.current) {
+      started.current = true
+      void load()
+    }
+    // Let an existing read finish when navigating to a page without consumers.
+    // Account changes unmount this keyed instance and abort its read.
+  }, [enabled, load, userId])
 
   async function mutate(operation, apply, message) {
     if (mutationLock.current || status !== 'success') {

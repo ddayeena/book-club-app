@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import Link from '../navigation/ClubLink.jsx'
 export default function DiscussionCard({ topic, search = '' }) {
   return <article className="discussion-card"><h2><Link to={`/clubs/${topic.club_id}/discussions/${topic.id}${search}`}>{topic.title}</Link></h2>
     <p className="field-hint">{topic.author_name} · <time dateTime={topic.created_at}>{new Date(topic.created_at).toLocaleString('uk-UA')}</time></p>

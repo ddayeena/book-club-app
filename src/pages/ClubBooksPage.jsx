@@ -1,5 +1,6 @@
 ﻿import { useEffect, useRef, useState } from 'react'
-import { Link, useParams, useSearchParams } from 'react-router'
+import { useParams, useSearchParams } from 'react-router'
+import Link from '../components/navigation/ClubLink.jsx'
 import useAuth from '../hooks/useAuth.js'
 import useClubs from '../hooks/useClubs.js'
 import PageHeading from '../components/ui/PageHeading.jsx'
@@ -11,8 +12,11 @@ import { bookService } from '../services/bookService.js'
 import { bookStatuses } from '../domain/bookValidation.js'
 import { errorMessage } from '../services/ServiceError.js'
 import NotFoundPage from './NotFoundPage.jsx'
+import useConfirmAction from '../hooks/useConfirmAction.jsx'
+import ConfirmDialog from '../components/ui/ConfirmDialog.jsx'
 
 function Bookshelf({ club }) {
+  const { ask, confirmation } = useConfirmAction()
   const { user } = useAuth()
   const { reload } = useClubs()
   const [params, setParams] = useSearchParams()
@@ -47,7 +51,7 @@ function Bookshelf({ club }) {
     setError(''); setStatus('loading'); setAttempt((n) => n + 1)
   }
   async function run(operation, message) {
-    if (!canManage || lock.current) return
+    if (!canManage || lock.current) return false
     lock.current = true; setBusy(true); setError(''); setNotice('')
     read.current?.abort()
     try {
@@ -60,19 +64,20 @@ function Bookshelf({ club }) {
       } catch {
         if (alive.current) { setError('Зміну збережено. Не вдалося оновити полицю — повторіть завантаження.'); setStatus('error') }
       }
-    } catch (cause) { if (alive.current) setError(errorMessage(cause)) }
+      return true
+    } catch (cause) { if (alive.current) setError(errorMessage(cause)); return { ok: false, message: errorMessage(cause) } }
     finally { lock.current = false; if (alive.current) setBusy(false) }
   }
   function start(book) {
     if (lock.current || book.isPollLocked) return
     const previous = books.find((entry) => entry.status === 'current')
     if (previous) { setPreviousAction(''); setReplacement({ book, previous }); return }
-    if (window.confirm(`Почати читання «${book.title}»?`))
-      void run(() => bookService.start(book.id), 'Читання розпочато.')
+    ask({ title: `Почати читання «${book.title}»?`, description: 'Книга стане поточною книгою клубу.', danger: false,
+      action: () => run(() => bookService.start(book.id), 'Читання розпочато.') })
   }
   function complete(book) {
-    if (window.confirm(`Завершити читання «${book.title}»?`))
-      void run(() => bookService.complete(book.id), 'Книгу додано до прочитаних.')
+    ask({ title: `Завершити читання «${book.title}»?`, description: 'Книгу буде перенесено до прочитаних зі збереженням історії.', danger: false,
+      action: () => run(() => bookService.complete(book.id), 'Книгу додано до прочитаних.') })
   }
   function setFilter(value) {
     const next = new URLSearchParams(params)
@@ -84,10 +89,11 @@ function Bookshelf({ club }) {
   return <>
     <p className="breadcrumb"><Link to={`/clubs/${club.id}`}>{club.name}</Link> / Книги</p>
     <PageHeading title={`Книжкова полиця: ${club.name}`} />
+    {confirmation}
     <p className="page-lead">Що читаємо зараз, що плануємо й що вже обговорили.</p>
     {club.archivedAt && <p className="flash">Клуб архівовано. Полиця доступна лише для перегляду історії.</p>}
     {notice && <p role="status" className="flash">{notice}</p>}
-    {error && <p role="alert" className="form-alert">{error}</p>}
+    {error && !confirmation && !replacement && <p role="alert" className="form-alert">{error}</p>}
     <div className="page-toolbar">
       {user && <Link to={`/clubs/${club.id}/polls`} className="link-button link-button-secondary">Голосування за книги</Link>}
       {canManage && <AppButton disabled={busy || status !== 'success'} onClick={() => { setEditor({ book: null }); setReplacement(null); setError('') }}>Додати книгу</AppButton>}
@@ -102,8 +108,9 @@ function Bookshelf({ club }) {
     {canManage && editor && <BookForm key={editor.book?.id ?? 'new'} book={editor.book} busy={busy}
       onSave={(draft) => run(() => bookService.save(club.id, draft, editor.book), 'Книгу збережено до полиці.')}
       onCancel={() => { if (!busy) setEditor(null) }} />}
-    {canManage && replacement && <section className="book-replacement" aria-labelledby="replacement-title">
-      <h2 id="replacement-title">Що зробити з поточною книгою?</h2>
+    {canManage && replacement && <ConfirmDialog title="Що зробити з поточною книгою?" danger={false} busy={busy} error={error} confirmDisabled={!previousAction}
+      confirmLabel="Підтвердити заміну" cancelLabel="Скасувати заміну" onCancel={() => setReplacement(null)}
+      onConfirm={() => run(() => bookService.start(replacement.book.id, replacement.previous.id, previousAction), 'Поточну книгу змінено.')}>
       <p>Зараз читаємо «{replacement.previous.title}». Наступне читання — «{replacement.book.title}».</p>
       <fieldset disabled={busy}>
         <legend>Дія для попередньої книги</legend>
@@ -111,13 +118,7 @@ function Bookshelf({ club }) {
           <label className="checkbox-field" key={value}><input type="radio" name="previous-action" value={value}
             checked={previousAction === value} onChange={() => setPreviousAction(value)} />{label}</label>)}
       </fieldset>
-      <div className="form-actions">
-        <AppButton disabled={busy || !previousAction} onClick={() => void run(
-          () => bookService.start(replacement.book.id, replacement.previous.id, previousAction), 'Поточну книгу змінено.',
-        )}>Підтвердити заміну</AppButton>
-        <AppButton variant="secondary" disabled={busy} onClick={() => setReplacement(null)}>Скасувати заміну</AppButton>
-      </div>
-    </section>}
+    </ConfirmDialog>}
     {status === 'success' && (visible.length ? <ul className="book-grid">{visible.map((book) => <li key={book.id}>
       <BookCard book={book} canManage={canManage} busy={busy}
         onEdit={(value) => { setEditor({ book: value }); setReplacement(null); setError('') }}

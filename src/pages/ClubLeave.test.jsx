@@ -32,7 +32,6 @@ beforeEach(() => {
   useClubs.mockImplementation(() => ({ clubs: [club], reload, isMutating: false }))
   useRequests.mockReturnValue({ requests: history, status: 'success' })
   clubService.removeMember.mockResolvedValue(undefined)
-  vi.spyOn(window, 'confirm').mockReturnValue(true)
 })
 afterEach(() => vi.restoreAllMocks())
 
@@ -53,6 +52,7 @@ test('після виходу оновлює членство, зберігає 
     view.rerender(tree())
   })
   await userEvent.click(screen.getByRole('button', { name: 'Покинути клуб' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Підтвердити' }))
   expect(clubService.removeMember).toHaveBeenCalledWith(club.id, 'reader')
   expect(reload).toHaveBeenCalledWith(true)
   expect(screen.queryByRole('button', { name: 'Покинути клуб' })).not.toBeInTheDocument()
@@ -63,14 +63,15 @@ test('відмова сервера залишає кнопку й показу�
   clubService.removeMember.mockRejectedValue(new ServiceError('Вихід не виконано'))
   render(tree())
   await userEvent.click(screen.getByRole('button', { name: 'Покинути клуб' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Підтвердити' }))
   expect(await screen.findByRole('alert')).toHaveTextContent('Вихід не виконано')
   expect(screen.getByRole('button', { name: 'Покинути клуб' })).toBeEnabled()
   expect(reload).not.toHaveBeenCalled()
 })
 test('скасування підтвердження не викликає RPC', async () => {
-  window.confirm.mockReturnValue(false)
   render(tree())
   await userEvent.click(screen.getByRole('button', { name: 'Покинути клуб' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Скасувати' }))
   expect(clubService.removeMember).not.toHaveBeenCalled()
 })
 test('оновлена після схвалення ознака членства показує кнопку', () => {

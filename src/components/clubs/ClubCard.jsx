@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import Link from '../navigation/ClubLink.jsx'
 import ReadingStatusBadge from './ReadingStatusBadge.jsx'
 import AppButton from '../ui/AppButton.jsx'
 import GenreTag from '../ui/GenreTag.jsx'
@@ -51,7 +51,7 @@ export default function ClubCard({ club, selected, onSelect, isOwn = false, show
           </div>
           <div>
             <dt>Учасників</dt>
-            <dd>{club.membersCount}</dd>
+            <dd>{Number.isSafeInteger(club.membersCount) && club.membersCount >= 0 ? club.membersCount : '—'}</dd>
           </div>
         </dl>
 

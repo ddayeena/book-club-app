@@ -1,4 +1,5 @@
-﻿import { useEffect, useRef, useState } from 'react'
+import PageLoading from './PageLoading.jsx'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import useAuth from '../../hooks/useAuth.js'
 import ErrorBoundary from './ErrorBoundary.jsx'
@@ -62,7 +63,7 @@ export default function AdminLayout() {
       <header className="admin-topbar"><button ref={toggle} className="admin-menu-toggle" type="button" aria-expanded={open}
         aria-controls="admin-sidebar" onClick={() => setOpen(true)}>☰ Меню</button><span>Панель адміністратора</span></header>
       <main id="admin-content" className="admin-content" tabIndex={-1} ref={content}>
-        <ErrorBoundary resetKey={location.pathname}><Outlet key={user.id} /></ErrorBoundary>
+        <ErrorBoundary resetKey={location.pathname}><Suspense fallback={<PageLoading />}><Outlet key={user.id} /></Suspense></ErrorBoundary>
       </main>
     </div>
   </div>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { useParams } from 'react-router'
+import Link from '../components/navigation/ClubLink.jsx'
 import useAuth from '../hooks/useAuth.js'
 import useClubs from '../hooks/useClubs.js'
 import PageHeading from '../components/ui/PageHeading.jsx'
@@ -61,7 +62,7 @@ function Details({ club, meetingId }) {
   return <div className="meetings-page"><p className="breadcrumb"><Link to={`/clubs/${club.id}/meetings`}>Зустрічі клубу</Link> / Деталі</p>
     <div tabIndex={-1} ref={heading}><PageHeading title={meeting?.title ?? 'Деталі зустрічі'} /></div>
     {notice && <p role="status" className="flash">{notice}</p>}
-    {error && <p role="alert" className="form-alert">{error}</p>}
+    {error && !confirm && <p role="alert" className="form-alert">{error}</p>}
     {!meeting && !error && <p role="status">Завантаження зустрічі…</p>}
     <AppButton variant="secondary" disabled={busy} onClick={refresh}>Оновити дані</AppButton>
     {meeting && <section className="meeting-card" aria-label="Інформація про зустріч">
@@ -76,7 +77,7 @@ function Details({ club, meetingId }) {
       {club.archivedAt && <p className="field-hint">Архів клубу: лише перегляд.</p>}
       {canManage && <div className="form-actions"><Link className="link-button link-button-secondary" to={`/clubs/${club.id}/meetings/${meeting.id}/edit`}>Редагувати зустріч</Link>
         <span ref={trigger}><AppButton variant="danger" disabled={busy} onClick={() => setConfirm(true)}>Скасувати зустріч</AppButton></span></div>}
-      {confirm && <AdminConfirmation title="Скасувати зустріч?" busy={busy} onConfirm={() => void cancel()} onCancel={dismiss}>
+      {confirm && <AdminConfirmation title="Скасувати зустріч?" busy={busy} error={error} onConfirm={cancel} onCancel={dismiss}>
         <p>Зустріч залишиться в історії. Відновити її неможливо.</p></AdminConfirmation>}
     </section>}
   </div>

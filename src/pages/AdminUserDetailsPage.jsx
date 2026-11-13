@@ -32,7 +32,7 @@ function UserDetails({ userId }) {
   return <>
     <Link className="admin-back-link" to={`/admin/users${location.search}`}>← До списку користувачів</Link>
     <PageHeading title={profile?.name ?? 'Деталі користувача'} />
-    <AdminFeedback resource={resource} />
+    <AdminFeedback resource={{ ...resource, error: confirming && profile ? '' : resource.error }} />
     {!resource.loading && !resource.error && !profile && <section className="admin-detail-card"><h2>Користувача не знайдено</h2><p>Профіль відсутній або недоступний.</p></section>}
     {profile && !resource.loading && <>
       <div className="admin-detail-heading"><div className="admin-row-actions">
@@ -42,7 +42,7 @@ function UserDetails({ userId }) {
         <span ref={opener}><AppButton variant="secondary" disabled={resource.busy || profile.id === actor.id} onClick={() => setConfirming(true)}>
           {profile.isBlocked ? 'Розблокувати користувача' : 'Заблокувати користувача'}</AppButton></span>
       </div>
-      {confirming && <AdminConfirmation title={profile.isBlocked ? 'Розблокувати користувача?' : 'Заблокувати користувача?'} busy={resource.busy} onCancel={close} onConfirm={() => void changeAccess()}>
+      {confirming && <AdminConfirmation title={profile.isBlocked ? 'Розблокувати користувача?' : 'Заблокувати користувача?'} danger={!profile.isBlocked} busy={resource.busy} error={resource.error} onCancel={close} onConfirm={changeAccess}>
         <p><strong>{profile.name}</strong></p><p>Профіль, клуби, членство та історія зберігаються. Зміниться лише стан доступу.</p>
       </AdminConfirmation>}
       <section className="admin-detail-card"><h2>Основна інформація</h2><dl className="admin-facts">

@@ -36,6 +36,8 @@ test.each(['/profile', '/my-clubs'])('guest direct URL %s requires login', async
 })
 test('profile loads after F5 and validates/saves name and reminders then synchronizes Auth', async () => {
   mount(); await screen.findByLabelText('Ім’я')
+  expect(screen.getByText(/Нагадування про зустрічі надходять у центр сповіщень ReadHub/)).toHaveTextContent('Ви можете вмикати й вимикати їх тут, у профілі. Це внутрішні сповіщення, а не email чи push.')
+  expect(screen.queryByText(/Автоматичне надсилання ще не ввімкнено/)).not.toBeInTheDocument()
   expect(screen.getByText(/10.11.2026/)).toBeInTheDocument()
   await userEvent.clear(screen.getByLabelText('Ім’я'))
   await userEvent.type(screen.getByLabelText('Ім’я'), 'A')

@@ -8,6 +8,7 @@ import useClubs from '../hooks/useClubs.js'
 import useRequests from '../hooks/useRequests.js'
 import { clubFormatOptions, optionLabel } from '../domain/options.js'
 import { meetingParts } from '../domain/dates.js'
+import { formatMeetingTime, localDateTime } from '../domain/meetingValidation.js'
 import { firstName } from '../domain/people.js'
 import { genreColor } from '../domain/genreColor.js'
 
@@ -35,8 +36,9 @@ export default function HomePage() {
   const [query, setQuery] = useState('')
 
   const readingNow = clubs.filter((club) => club.currentBook)
-  const upcoming = clubs.filter((club) => club.nextMeeting)
-    .sort((a, b) => a.nextMeeting.localeCompare(b.nextMeeting))
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const upcoming = clubs.filter((club) => typeof club.nextMeetingAt === 'string' && Number.isFinite(Date.parse(club.nextMeetingAt)))
+    .sort((a, b) => Date.parse(a.nextMeetingAt) - Date.parse(b.nextMeetingAt) || a.id.localeCompare(b.id))
     .slice(0, 4)
   const popular = [...clubs]
     .sort((a, b) => b.membersCount - a.membersCount)
@@ -113,10 +115,11 @@ export default function HomePage() {
       )}
 
       <Block number="01" title="Найближчі зустрічі">
-        {upcoming.length === 0 && <p className="muted">Дати зустрічей ще не визначено.</p>}
+        {upcoming.length === 0 ? <p className="muted">Запланованих зустрічей із визначеним часом поки немає.</p>
+          : <p className="field-hint">Часовий пояс: {timezone}</p>}
         <ol className="timeline">
           {upcoming.map((club) => {
-            const parts = meetingParts(club.nextMeeting)
+            const parts = meetingParts(localDateTime(club.nextMeetingAt).slice(0, 10))
             const color = genreColor(club.genre)
             return (
               <li key={club.id}>
@@ -126,6 +129,7 @@ export default function HomePage() {
                 </span>
                 <div className="timeline-info">
                   <Link to={`/clubs/${encodeURIComponent(club.id)}`}>{club.name}</Link>
+                  <time dateTime={club.nextMeetingAt}>{formatMeetingTime(club.nextMeetingAt, timezone)}</time>
                   <span>
                     {optionLabel(clubFormatOptions, club.format)}
                     {club.currentBook ? `, ${club.currentBook}` : ', книгу ще не обрано'}
@@ -199,7 +203,7 @@ export default function HomePage() {
                 </div>
               </div>
             )}
-            {user && status === 'loading' && <p className="muted">Завантаження…</p>}
+            {user && status === 'loading' && <p className="muted" role="status">Завантаження…</p>}
             {user && status === 'error' && (
               <p className="muted">Не вдалося завантажити заявки.</p>
             )}

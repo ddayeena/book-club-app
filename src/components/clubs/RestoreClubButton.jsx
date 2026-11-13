@@ -35,10 +35,10 @@ export default function RestoreClubButton({ club }) {
   }
   if (!allowed) return null
   return <>
-    {error && <p role="alert" className="form-alert">{error}</p>}
+    {error && !confirming && <p role="alert" className="form-alert">{error}</p>}
     {notice && <p ref={feedback} tabIndex={-1} role="status" className="flash">{notice}</p>}
     {club.archivedAt && <span ref={opener}><AppButton variant="secondary" disabled={disabled} onClick={() => { setError(''); setConfirming(true) }}>Відновити клуб</AppButton></span>}
-    {club.archivedAt && confirming && <AdminConfirmation title="Відновити клуб?" busy={disabled} onCancel={close} onConfirm={() => void restore()}>
+    {club.archivedAt && confirming && <AdminConfirmation title="Відновити клуб?" danger={false} busy={disabled} error={error} onCancel={close} onConfirm={restore}>
       <p>Клуб знову стане активним і доступним у каталозі. Раніше скасовані зустрічі та голосування автоматично не відновляться.</p>
     </AdminConfirmation>}
   </>

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { useParams } from 'react-router'
+import Link from '../components/navigation/ClubLink.jsx'
 import useAuth from '../hooks/useAuth.js'
 import useClubs from '../hooks/useClubs.js'
 import PageHeading from '../components/ui/PageHeading.jsx'
@@ -11,6 +12,7 @@ import PollFinalization from '../components/polls/PollFinalization.jsx'
 import { pollService } from '../services/pollService.js'
 import { errorMessage, ServiceError } from '../services/ServiceError.js'
 import NotFoundPage from './NotFoundPage.jsx'
+import ConfirmDialog from '../components/ui/ConfirmDialog.jsx'
 
 function Poll({ club, pollId }) {
   const { reload } = useClubs()
@@ -25,15 +27,11 @@ function Poll({ club, pollId }) {
   const lock = useRef(false)
   const alive = useRef(false)
   const read = useRef(null)
-  const cancelPanel = useRef(null)
   const cancelTrigger = useRef(null)
   const check = useCallback((record) => {
     if (record.clubId !== club.id) throw new ServiceError('Голосування не належить цьому клубу.', { code: 'NOT_FOUND' })
     return record
   }, [club.id])
-  useEffect(() => {
-    if (confirmCancel) cancelPanel.current?.querySelectorAll('button')[1]?.focus()
-  }, [confirmCancel])
   useEffect(() => {
     alive.current = true
     const controller = new AbortController()
@@ -77,7 +75,7 @@ function Poll({ club, pollId }) {
     <PageHeading title={poll?.title ?? 'Голосування за книгу'} />
     {loading && <p role="status">Завантаження голосування…</p>}
     {notice && <p role="status" className="flash">{notice}</p>}
-    {error && <p role="alert" className="form-alert">{error}</p>}
+    {error && !confirmCancel && <p role="alert" className="form-alert">{error}</p>}
     <div className="page-toolbar"><AppButton variant="secondary" disabled={busy} onClick={refresh}>Оновити голосування</AppButton>
       <Link to={`/clubs/${club.id}/books`} className="link-button link-button-secondary">Книжкова полиця</Link></div>
     {club.archivedAt && <p className="flash">Архів клубу: лише перегляд історії.</p>}
@@ -91,13 +89,11 @@ function Poll({ club, pollId }) {
         onFinalize={(option) => run(() => pollService.finalize(poll.id, option), 'Переможця зафіксовано. Книга залишилася запланованою.')} />}
       {poll.status === 'finalized' && <p className="flash">Книгу обрано. {poll.selectionConsumedAt ? 'Читання обраної книги вже розпочинали.' : 'Початок читання — окрема дія на книжковій полиці.'}</p>}
       {poll.canCancel && !confirmCancel && <span ref={cancelTrigger}><AppButton variant="secondary" disabled={!actionable} onClick={() => setConfirmCancel(true)}>Скасувати голосування</AppButton></span>}
-      {poll.canCancel && confirmCancel && <section ref={cancelPanel} className="book-replacement" role="alertdialog" aria-labelledby="cancel-poll-title" aria-describedby="cancel-poll-description"
-        onKeyDown={(e) => { if (e.key === 'Escape') dismissCancellation() }}>
-        <h2 id="cancel-poll-title">Скасувати це голосування?</h2>
-        <p id="cancel-poll-description">Голоси й результати залишаться в історії. Голосування неможливо буде відновити.</p>
-        <div className="form-actions"><AppButton disabled={!actionable} onClick={() => void run(() => pollService.cancel(poll.id), 'Голосування скасовано.')}>Підтвердити скасування</AppButton>
-          <AppButton variant="secondary" disabled={busy} onClick={dismissCancellation}>Залишити голосування</AppButton></div>
-      </section>}
+      {poll.canCancel && confirmCancel && <ConfirmDialog title="Скасувати це голосування?" busy={busy} error={error}
+        confirmDisabled={loading || Boolean(club.archivedAt)} confirmLabel="Підтвердити скасування" cancelLabel="Залишити голосування"
+        onCancel={dismissCancellation} onConfirm={() => run(() => pollService.cancel(poll.id), 'Голосування скасовано.')}>
+        <p>Голоси й результати залишаться в історії. Голосування неможливо буде відновити.</p>
+      </ConfirmDialog>}
     </>}
   </>
 }

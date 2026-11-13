@@ -1,40 +1,45 @@
+import { Suspense } from 'react'
+import { lazyPage } from './routes/lazyPage.js'
+import PageLoading from './components/layout/PageLoading.jsx'
+import ErrorBoundary from './components/layout/ErrorBoundary.jsx'
 import { Route, Routes } from 'react-router'
 import AppLayout from './components/layout/AppLayout.jsx'
 import RequestsLayout from './components/layout/RequestsLayout.jsx'
 import RequireAuth from './components/auth/RequireAuth.jsx'
 import HomePage from './pages/HomePage.jsx'
-import AuthPage from './pages/AuthPage.jsx'
-import LogoutPage from './pages/LogoutPage.jsx'
 import ClubsListPage from './pages/ClubsListPage.jsx'
 import ClubDetailsPage from './pages/ClubDetailsPage.jsx'
-import ClubEditorPage from './pages/ClubEditorPage.jsx'
-import RequestsPage from './pages/RequestsPage.jsx'
-import RequestCreatePage from './pages/RequestCreatePage.jsx'
-import RequestDetailsPage from './pages/RequestDetailsPage.jsx'
-import RequestEditPage from './pages/RequestEditPage.jsx'
 import NotFoundPage from './pages/NotFoundPage.jsx'
 import ClubMembersPage from './pages/ClubMembersPage.jsx'
 import ClubRequestsPage from './pages/ClubRequestsPage.jsx'
-import ClubBooksPage from './pages/ClubBooksPage.jsx'
-import ClubPollsPage from './pages/ClubPollsPage.jsx'
-import ClubPollPage from './pages/ClubPollPage.jsx'
 import RequireAdmin from './components/auth/RequireAdmin.jsx'
-import AdminLayout from './components/layout/AdminLayout.jsx'
-import AdminDashboardPage from './pages/AdminDashboardPage.jsx'
-import AdminUsersPage from './pages/AdminUsersPage.jsx'
-import AdminClubsPage from './pages/AdminClubsPage.jsx'
 import SessionLayout from './components/layout/SessionLayout.jsx'
-import AdminClubDetailsPage from './pages/AdminClubDetailsPage.jsx'
-import AdminUserDetailsPage from './pages/AdminUserDetailsPage.jsx'
-import ProfilePage from './pages/ProfilePage.jsx'
-import MyClubsPage from './pages/MyClubsPage.jsx'
-import ClubMeetingsPage from './pages/ClubMeetingsPage.jsx'
-import MeetingDetailsPage from './pages/MeetingDetailsPage.jsx'
-import MeetingEditorPage from './pages/MeetingEditorPage.jsx'
-import NotificationsPage from './pages/NotificationsPage.jsx'
-import ClubDiscussionsPage from './pages/ClubDiscussionsPage.jsx'
-import DiscussionDetailsPage from './pages/DiscussionDetailsPage.jsx'
-import DiscussionEditorPage from './pages/DiscussionEditorPage.jsx'
+
+const AdminLayout = lazyPage(() => import('./routes/adminPages.jsx'), 'AdminLayout')
+const AdminDashboardPage = lazyPage(() => import('./routes/adminPages.jsx'), 'AdminDashboardPage')
+const AdminUsersPage = lazyPage(() => import('./routes/adminPages.jsx'), 'AdminUsersPage')
+const AdminClubsPage = lazyPage(() => import('./routes/adminPages.jsx'), 'AdminClubsPage')
+const AdminClubDetailsPage = lazyPage(() => import('./routes/adminPages.jsx'), 'AdminClubDetailsPage')
+const AdminUserDetailsPage = lazyPage(() => import('./routes/adminPages.jsx'), 'AdminUserDetailsPage')
+const ClubMeetingsPage = lazyPage(() => import('./routes/meetingPages.jsx'), 'ClubMeetingsPage')
+const MeetingDetailsPage = lazyPage(() => import('./routes/meetingPages.jsx'), 'MeetingDetailsPage')
+const MeetingEditorPage = lazyPage(() => import('./routes/meetingPages.jsx'), 'MeetingEditorPage')
+const ClubDiscussionsPage = lazyPage(() => import('./routes/discussionPages.jsx'), 'ClubDiscussionsPage')
+const DiscussionDetailsPage = lazyPage(() => import('./routes/discussionPages.jsx'), 'DiscussionDetailsPage')
+const DiscussionEditorPage = lazyPage(() => import('./routes/discussionPages.jsx'), 'DiscussionEditorPage')
+const RequestsPage = lazyPage(() => import('./routes/requestPages.jsx'), 'RequestsPage')
+const RequestCreatePage = lazyPage(() => import('./routes/requestPages.jsx'), 'RequestCreatePage')
+const RequestDetailsPage = lazyPage(() => import('./routes/requestPages.jsx'), 'RequestDetailsPage')
+const RequestEditPage = lazyPage(() => import('./routes/requestPages.jsx'), 'RequestEditPage')
+const ProfilePage = lazyPage(() => import('./routes/personalPages.jsx'), 'ProfilePage')
+const MyClubsPage = lazyPage(() => import('./routes/personalPages.jsx'), 'MyClubsPage')
+const NotificationsPage = lazyPage(() => import('./routes/personalPages.jsx'), 'NotificationsPage')
+const ClubBooksPage = lazyPage(() => import('./routes/bookPages.jsx'), 'ClubBooksPage')
+const ClubPollsPage = lazyPage(() => import('./routes/bookPages.jsx'), 'ClubPollsPage')
+const ClubPollPage = lazyPage(() => import('./routes/bookPages.jsx'), 'ClubPollPage')
+const ClubEditorPage = lazyPage(() => import('./routes/editorPages.jsx'), 'ClubEditorPage')
+const AuthPage = lazyPage(() => import('./routes/editorPages.jsx'), 'AuthPage')
+const LogoutPage = lazyPage(() => import('./routes/editorPages.jsx'), 'LogoutPage')
 
 export default function App() {
   return (
@@ -83,7 +88,7 @@ export default function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Route>
       <Route element={<RequireAdmin />}>
-        <Route path="admin" element={<AdminLayout />}>
+        <Route path="admin" element={<ErrorBoundary resetKey="admin"><Suspense fallback={<PageLoading />}><AdminLayout /></Suspense></ErrorBoundary>}>
           <Route index element={<AdminDashboardPage />} />
           <Route path="users" element={<AdminUsersPage />} />
           <Route path="users/:userId" element={<AdminUserDetailsPage />} />

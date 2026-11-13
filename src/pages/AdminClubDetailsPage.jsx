@@ -33,7 +33,7 @@ function ClubDetails({ clubId }) {
     <div className="admin-club-title" ref={heading} tabIndex={-1}><PageHeading title={club?.name ?? 'Деталі клубу'} />
       {club && !resource.loading && <span className={`admin-status${club.archivedAt ? ' admin-status-archived' : ''}`}>{club.archivedAt ? 'Архівний' : 'Активний'}</span>}
     </div>
-    <AdminFeedback resource={resource} />
+    <AdminFeedback resource={{ ...resource, error: confirming && club ? '' : resource.error }} />
     {!resource.loading && !resource.error && !club && <section className="admin-detail-card"><h2>Клуб не знайдено</h2><p>Клуб відсутній або недоступний для цього облікового запису.</p></section>}
     {club && !resource.loading && <>
       <dl className="admin-user-counts" aria-label="Показники клубу">
@@ -65,10 +65,10 @@ function ClubDetails({ clubId }) {
           <p className="field-hint">{club.archivedAt ? 'Клуб архівовано. Його дані та історія збережені.' : 'Архівування збереже історію клубу, відхилить очікувані заявки та скасує незавершене голосування.'}</p>
           <div className="form-actions"><Link to={`/clubs/${club.id}`}>Переглянути на сайті</Link>
             <span ref={opener}><AppButton variant="secondary" disabled={resource.busy} onClick={() => setConfirming(true)}>{club.archivedAt ? 'Відновити клуб' : 'Архівувати клуб'}</AppButton></span></div>
-          {confirming && !club.archivedAt && <AdminConfirmation title="Архівувати клуб?" busy={resource.busy} onCancel={close} onConfirm={() => void archive()}>
+          {confirming && !club.archivedAt && <AdminConfirmation title="Архівувати клуб?" busy={resource.busy} error={resource.error} onCancel={close} onConfirm={archive}>
             <p><strong>{club.name}</strong></p><p>Клуб залишиться в історії. Очікувані заявки буде відхилено, незавершене голосування — скасовано.</p>
           </AdminConfirmation>}
-          {confirming && club.archivedAt && <AdminConfirmation title="Відновити клуб?" busy={resource.busy} onCancel={close} onConfirm={() => void restore()}>
+          {confirming && club.archivedAt && <AdminConfirmation title="Відновити клуб?" danger={false} busy={resource.busy} error={resource.error} onCancel={close} onConfirm={restore}>
             <p>Клуб знову стане активним і доступним у каталозі. Раніше скасовані зустрічі та голосування автоматично не відновляться.</p>
           </AdminConfirmation>}
         </section>

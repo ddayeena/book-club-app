@@ -24,7 +24,6 @@ beforeEach(() => {
   requestService.review.mockResolvedValue({ ...request, status: 'approved' })
   clubService.getMembers.mockResolvedValue([{ user_id: 'owner', name: 'Власник' }, { user_id: 'reader', name: 'Читач' }])
   clubService.removeMember.mockResolvedValue(undefined)
-  vi.spyOn(window, 'confirm').mockReturnValue(true)
 })
 afterEach(() => vi.restoreAllMocks())
 function mount(section) {
@@ -37,6 +36,7 @@ function mount(section) {
 test('власник бачить вхідні заявки та може схвалити', async () => {
   mount('requests')
   await userEvent.click(await screen.findByRole('button', { name: 'Схвалити' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Підтвердити' }))
   expect(await screen.findByText('Схвалено')).toBeInTheDocument()
   expect(requestService.review).toHaveBeenCalledWith('r', 'approved', '')
 })
@@ -44,6 +44,7 @@ test('помилка рішення зберігає очікувану заяв
   requestService.review.mockRejectedValue(new ServiceError('Немає доступу'))
   mount('requests')
   await userEvent.click(await screen.findByRole('button', { name: 'Відхилити' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Підтвердити' }))
   expect(await screen.findByRole('alert')).toHaveTextContent('Немає доступу')
   expect(screen.getByText('Очікує рішення')).toBeInTheDocument()
 })
@@ -56,6 +57,7 @@ test('стороння особа не відкриває інтерфейс в�
 test('власник може виключити іншого учасника, але не себе', async () => {
   mount('members')
   await userEvent.click(await screen.findByRole('button', { name: 'Виключити' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Підтвердити' }))
   expect(clubService.removeMember).toHaveBeenCalledWith('club-a', 'reader')
   expect(screen.queryByRole('button', { name: 'Покинути клуб' })).not.toBeInTheDocument()
 })
@@ -63,6 +65,7 @@ test('учасник виходить із клубу й повертаєтьс�
   useAuth.mockReturnValue({ user: { id: 'reader', role: 'user' } })
   mount('members')
   await userEvent.click(await screen.findByRole('button', { name: 'Покинути клуб' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Підтвердити' }))
   expect(await screen.findByText('Сторінка клубу')).toBeInTheDocument()
   expect(clubService.removeMember).toHaveBeenCalledWith('club-a', 'reader')
 })

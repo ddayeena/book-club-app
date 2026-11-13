@@ -6,6 +6,7 @@ import ReadingStatusBadge from '../components/clubs/ReadingStatusBadge.jsx'
 import JoinForm from '../components/join/JoinForm.jsx'
 import JoinSummary from '../components/join/JoinSummary.jsx'
 import { validateRequest } from '../domain/requestValidation.js'
+import useConfirmAction from '../hooks/useConfirmAction.jsx'
 
 const emptyDraft = {
   motivation: '',
@@ -41,6 +42,7 @@ export default function JoinPage({
   onSave, onCancel, submitLabel, cancelLabel = 'Вийти без збереження',
 }) {
   const initialValues = toDraft(initialDraft)
+  const { ask, confirmation } = useConfirmAction()
   const [draft, setDraft] = useState(() => toDraft(initialDraft))
   const [touched, setTouched] = useState({})
   const [attempted, setAttempted] = useState(false)
@@ -105,24 +107,21 @@ export default function JoinPage({
   function handleReset() {
     if (submitting.current) return
     if (!isDirty) return
-    if (!window.confirm('Відкинути введені зміни та відновити початкові поля?')) {
-      return
-    }
-    setDraft(toDraft(initialDraft))
-    setTouched({})
-    setAttempted(false)
-    setOperationError('')
+    ask({ title: 'Відкинути введені зміни?', description: 'Поля заявки повернуться до початкових значень.', action: () => {
+      setDraft(toDraft(initialDraft)); setTouched({}); setAttempted(false); setOperationError('')
+    } })
   }
 
   function handleCancel() {
     if (submitting.current) return
-    if (isDirty && !window.confirm('Вийти та відкинути незбережені зміни?')) return
-    onCancel()
+    if (isDirty) ask({ title: 'Відкинути незбережені зміни?', description: 'Введені зміни заявки не буде збережено.', action: onCancel })
+    else onCancel()
   }
 
   return (
     <>
       <PageHeading title={title} />
+      {confirmation}
       <Section id="join-editor" title="Поля та підсумок">
         <p><ReadingStatusBadge currentBook={club.currentBook} /></p>
         <div className="editor-layout">

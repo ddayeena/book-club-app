@@ -44,8 +44,8 @@ function Collection({ kind, query, update }) {
           <AppButton variant="secondary" onClick={() => update('reset')}>Скинути</AppButton></div>
       </fieldset>
     </form>
-    <AdminFeedback resource={resource} />
-    {target && <AdminConfirmation title={users ? target.is_blocked ? 'Розблокувати користувача?' : 'Заблокувати користувача?' : 'Архівувати клуб?'} busy={resource.busy} onCancel={close} onConfirm={() => void confirm()}>
+    <AdminFeedback resource={{ ...resource, error: target ? '' : resource.error }} />
+    {target && <AdminConfirmation title={users ? target.is_blocked ? 'Розблокувати користувача?' : 'Заблокувати користувача?' : 'Архівувати клуб?'} danger={!users || !target.is_blocked} busy={resource.busy} error={resource.error} onCancel={close} onConfirm={confirm}>
       <p><strong>{target.name}</strong></p><p>{users ? 'Дані, клуби та історія користувача зберігаються.' : 'Клуб залишиться в історії. Очікувані заявки буде відхилено, незавершене голосування — скасовано.'}</p>
     </AdminConfirmation>}
     {resource.data && !resource.loading && <>

@@ -1,5 +1,5 @@
 import { beforeEach, expect, test, vi } from 'vitest'
-import { clubService } from './clubService.js'
+import { clubService, mapClub } from './clubService.js'
 import { supabaseRequestService } from './supabaseRequestService.js'
 import { getSupabase } from './supabaseClient.js'
 import { setActiveUser } from './authService.js'
@@ -11,6 +11,11 @@ let response
 let query
 const row = { id: 'remote-club', owner_id: 'auth-a', name: 'Клуб', members_count: 3, archived_at: null }
 const request = { id: 'remote-request', club_id: 'remote-club', applicant_id: 'auth-a', status: 'pending' }
+test('unknown participant count is not replaced with a fabricated owner count', () => {
+  for (const members_count of [undefined, null, '', 'bad', -1, Infinity, 2.5]) expect(mapClub({ ...row, members_count }).membersCount).toBeNull()
+  expect(mapClub({ ...row, members_count: 0 }).membersCount).toBe(0)
+  expect(mapClub(row).membersCount).toBe(3)
+})
 beforeEach(() => {
   setActiveUser({ id: 'auth-a' })
   response = { data: row, error: null }

@@ -1,6 +1,7 @@
 import AppButton from '../ui/AppButton.jsx'
 import FormField from '../ui/FormField.jsx'
 import { clubFormatOptions } from '../../domain/options.js'
+import { catalogLanguageOptions, memberRangeOptions } from '../../domain/catalogFilters.js'
 
 export default function ClubFilters({
   query,
@@ -18,6 +19,8 @@ export default function ClubFilters({
   onGenreChange,
   onSortChange,
   onReset,
+  language = 'all', members = 'all', meetingOnly = false,
+  onLanguageChange, onMembersChange, onMeetingOnlyChange,
 }) {
   const formatChoices = [{ value: 'all', label: 'Усі формати' }, ...clubFormatOptions]
   const activeCount = [
@@ -27,6 +30,7 @@ export default function ClubFilters({
     format !== 'all',
     genre !== 'all',
     sort !== 'name',
+    language !== 'all', members !== 'all', meetingOnly,
   ].filter(Boolean).length
 
   return (
@@ -60,6 +64,18 @@ export default function ClubFilters({
             ))}
           </select>
         </FormField>
+
+        <FormField id="catalog-language" label="Мова клубу">
+          <select id="catalog-language" value={language} onChange={(event) => onLanguageChange(event.target.value)}>
+            <option value="all">Усі мови</option>{catalogLanguageOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+          </select>
+        </FormField>
+        <FormField id="catalog-members" label="Кількість учасників" hint="Включно з власником клубу.">
+          <select id="catalog-members" value={members} aria-describedby="catalog-members-hint" onChange={(event) => onMembersChange(event.target.value)}>
+            <option value="all">Будь-яка кількість</option>{memberRangeOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+          </select>
+        </FormField>
+        <label className="checkbox-field"><input type="checkbox" checked={meetingOnly} onChange={(event) => onMeetingOnlyChange(event.target.checked)} />Є запланована зустріч</label>
 
         <FormField id="catalog-sort" label="Упорядкування">
           <select
@@ -106,7 +122,7 @@ export default function ClubFilters({
               checked={mine}
               onChange={(event) => onMineChange(event.target.checked)}
             />
-            Лише мої клуби
+            Створені мною
           </label>
         )}
 

@@ -14,7 +14,8 @@ const number = (value) => Number(value ?? 0).toLocaleString('uk-UA')
 function Metric({ label, value, icon, to, hint }) {
   const content = <><span className="admin-metric-top"><span>{label}</span><span className="admin-metric-icon"><StatIcon type={icon} /></span></span>
     <strong>{number(value)}</strong><span className="admin-metric-hint">{hint}{to && <span aria-hidden="true"> ↗</span>}</span></>
-  return to ? <Link className="admin-summary-card" to={to}>{content}</Link> : <div className="admin-summary-card">{content}</div>
+  const className = `admin-summary-card admin-summary-${icon}`
+  return to ? <Link className={className} to={to}>{content}</Link> : <div className={className}>{content}</div>
 }
 function Detail({ label, value, to }) {
   return <div><dt>{to ? <Link to={to}>{label}<span aria-hidden="true"> ↗</span></Link> : label}</dt><dd>{number(value)}</dd></div>

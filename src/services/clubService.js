@@ -1,6 +1,7 @@
 ﻿import { getSupabase } from './supabaseClient.js'
 import { ServiceError } from './ServiceError.js'
 import { validateClub } from '../domain/clubValidation.js'
+import { memberCount } from '../domain/catalogFilters.js'
 
 export async function unwrap(query) {
   const { data, error } = await query
@@ -15,7 +16,7 @@ export function mapClub(c) {
     description: c.description, currentBook: c.current_book ?? null, nextMeeting: c.next_meeting,
     nextMeetingAt: c.next_meeting_at ?? null, legacyNextMeeting: c.legacy_next_meeting ?? null,
     format: c.format, language: c.language, meetingsPerMonth: c.meetings_per_month,
-    membersCount: Number(c.members_count ?? 1), archivedAt: c.archived_at, isMember: c.is_member ?? false }
+    membersCount: memberCount(c.members_count), archivedAt: c.archived_at, isMember: c.is_member ?? false }
 }
 function input(values) {
   const result = validateClub(values)

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useLocation, useSearchParams } from 'react-router'
+import { useLocation, useSearchParams } from 'react-router'
+import Link from '../components/navigation/ClubLink.jsx'
 import DiscussionScope from '../components/discussions/DiscussionScope.jsx'
 import DiscussionComment from '../components/discussions/DiscussionComment.jsx'
 import CommentForm from '../components/discussions/CommentForm.jsx'
@@ -34,7 +35,7 @@ function Details({ club, topicId }) {
   const topic = data?.topic
   return <div className="discussions-page"><Link to={`/clubs/${club.id}/discussions${search}`}>Назад до обговорень</Link>
     <div tabIndex={-1} ref={heading}><PageHeading title={topic?.deleted_at ? 'Тему видалено' : topic?.title ?? 'Обговорення'} /></div>
-    {notice && <p className="flash" role="status">{notice}</p>}{(error || failure) && <p role="alert" className="form-alert">{failure || error}</p>}
+    {notice && <p className="flash" role="status">{notice}</p>}{(error || failure) && !confirm && <p role="alert" className="form-alert">{failure || error}</p>}
     <AppButton variant="secondary" disabled={busy} onClick={() => { setFailure(''); setConfirm(null); reload() }}>Оновити тему</AppButton>
     {!data && !error && <p role="status">Завантаження теми…</p>}
     {topic?.deleted_at && <p className="empty-state">Тему видалено. Її текст і коментарі недоступні.</p>}
@@ -52,8 +53,8 @@ function Details({ club, topicId }) {
         {topic.can_comment && <CommentForm busy={busy} onSave={(draft) => perform(() => discussionService.saveComment(topicId, draft), 'Коментар додано.')} />}
       </section>
     </>}
-    {confirm && <AdminConfirmation title={confirm.comment ? 'Видалити коментар?' : 'Видалити тему?'} busy={busy} onCancel={dismiss}
-      onConfirm={() => void perform(() => confirm.comment ? discussionService.removeComment(confirm.comment) : discussionService.remove(confirm.topic), 'Запис видалено.')}>
+    {confirm && <AdminConfirmation title={confirm.comment ? 'Видалити коментар?' : 'Видалити тему?'} busy={busy} error={failure || error} onCancel={dismiss}
+      onConfirm={() => perform(() => confirm.comment ? discussionService.removeComment(confirm.comment) : discussionService.remove(confirm.topic), 'Запис видалено.')}>
       <p>{confirm.comment ? 'Текст буде очищено. Залишиться позначка про видалення.' : 'Текст теми буде очищено, а її коментарі стануть недоступними.'} Відновлення неможливе.</p>
     </AdminConfirmation>}
   </div>

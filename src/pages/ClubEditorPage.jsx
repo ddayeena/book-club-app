@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { useParams } from 'react-router'
+import useNavigate from '../hooks/useClubNavigate.js'
+import useConfirmAction from '../hooks/useConfirmAction.jsx'
 import PageHeading from '../components/ui/PageHeading.jsx'
 import ClubForm from '../components/clubs/ClubForm.jsx'
 import ClubPreview from '../components/clubs/ClubPreview.jsx'
@@ -32,6 +34,7 @@ function toDraft(club) {
 }
 
 function ClubEditor({ club }) {
+  const { ask, confirmation } = useConfirmAction()
   const navigate = useNavigate()
   const { clubs, createClub, updateClub, isMutating } = useClubs()
   const editing = Boolean(club)
@@ -95,13 +98,14 @@ function ClubEditor({ club }) {
   }
 
   function handleCancel() {
-    if (isDirty && !window.confirm('Вийти та відкинути незбережені зміни?')) return
-    navigate(backPath)
+    if (isDirty) ask({ title: 'Відкинути незбережені зміни?', description: 'Введені зміни клубу не буде збережено.', action: () => navigate(backPath) })
+    else navigate(backPath)
   }
 
   return (
     <>
       <PageHeading title={editing ? `Редагування клубу: ${club.name}` : 'Новий клуб'} />
+      {confirmation}
       <p className="page-lead">
         {editing
           ? 'Змініть дані клубу. Кількість учасників і власника змінити не можна.'

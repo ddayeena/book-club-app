@@ -26,7 +26,6 @@ beforeEach(() => {
   bookService.save.mockResolvedValue(planned)
   bookService.start.mockResolvedValue({ ...planned, status: 'current' })
   bookService.complete.mockResolvedValue({ ...current, status: 'completed' })
-  vi.spyOn(window, 'confirm').mockReturnValue(true)
 })
 afterEach(() => vi.restoreAllMocks())
 test('гість бачить книги без інструментів редагування', async () => {

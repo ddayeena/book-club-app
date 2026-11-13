@@ -226,18 +226,17 @@ test('змінює заявку зі збереженням id та відкри
 })
 
 test('скасування діалогу не викликає видалення', async () => {
-  vi.spyOn(window, 'confirm').mockReturnValue(false)
   const user = renderApp('/requests/req-test-001')
   await screen.findByRole('heading', { name: 'Заявка req-test-001' })
 
   await user.click(screen.getByRole('button', { name: 'Видалити заявку' }))
+  await user.click(screen.getByRole('button', { name: 'Скасувати' }))
 
   expect(requestService.delete).not.toHaveBeenCalled()
   expect(screen.getByRole('heading', { name: 'Заявка req-test-001' })).toBeInTheDocument()
 })
 
 test('відмова видалення залишає запис і поточну адресу', async () => {
-  vi.spyOn(window, 'confirm').mockReturnValue(true)
   requestService.delete.mockRejectedValueOnce(
     new ServiceError('Не вдалося видалити заявку.'),
   )
@@ -245,6 +244,7 @@ test('відмова видалення залишає запис і поточ�
   await screen.findByRole('heading', { name: 'Заявка req-test-001' })
 
   await user.click(screen.getByRole('button', { name: 'Видалити заявку' }))
+  await user.click(screen.getByRole('button', { name: 'Підтвердити' }))
 
   expect(await screen.findByRole('alert')).toHaveTextContent('Не вдалося видалити заявку.')
   expect(screen.getByText(savedRequest.motivation)).toBeInTheDocument()
@@ -253,11 +253,11 @@ test('відмова видалення залишає запис і поточ�
 })
 
 test('підтверджене видалення прибирає запис і повертає до списку', async () => {
-  vi.spyOn(window, 'confirm').mockReturnValue(true)
   const user = renderApp('/requests/req-test-001')
   await screen.findByRole('heading', { name: 'Заявка req-test-001' })
 
   await user.click(screen.getByRole('button', { name: 'Видалити заявку' }))
+  await user.click(screen.getByRole('button', { name: 'Підтвердити' }))
 
   expect(await screen.findByText(/Заявок ще немає/)).toBeInTheDocument()
   expect(screen.getByTestId('location')).toHaveTextContent(/^\/requests$/)
@@ -449,10 +449,10 @@ test('власник редагує клуб і бачить оновлену н
 
 test('власник видаляє клуб після підтвердження', async () => {
   localStorage.setItem(customClubsKey, JSON.stringify([ownClub]))
-  vi.spyOn(window, 'confirm').mockReturnValue(true)
   const user = renderApp('/clubs/club-own-1')
 
   await user.click(await screen.findByRole('button', { name: 'Видалити клуб' }))
+  await user.click(screen.getByRole('button', { name: 'Підтвердити' }))
 
   expect(await screen.findByText('Клуб видалено.')).toBeInTheDocument()
   expect(screen.getByTestId('location')).toHaveTextContent(/^\/clubs$/)
@@ -462,10 +462,10 @@ test('власник видаляє клуб після підтвердженн
 
 test('скасоване видалення лишає клуб на місці', async () => {
   localStorage.setItem(customClubsKey, JSON.stringify([ownClub]))
-  vi.spyOn(window, 'confirm').mockReturnValue(false)
   const user = renderApp('/clubs/club-own-1')
 
   await user.click(await screen.findByRole('button', { name: 'Видалити клуб' }))
+  await user.click(screen.getByRole('button', { name: 'Скасувати' }))
 
   expect(screen.getByRole('heading', { name: 'Мій клуб читання' })).toBeInTheDocument()
   expect(JSON.parse(localStorage.getItem(customClubsKey))).toHaveLength(1)

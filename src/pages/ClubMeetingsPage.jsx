@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams, useSearchParams } from 'react-router'
+import { useParams, useSearchParams } from 'react-router'
+import Link from '../components/navigation/ClubLink.jsx'
 import useAuth from '../hooks/useAuth.js'
 import useClubs from '../hooks/useClubs.js'
 import PageHeading from '../components/ui/PageHeading.jsx'
@@ -32,7 +33,7 @@ function Meetings({ club }) {
   function load(nextStatus = status, nextPage = page) {
     setResult(null); setFailure(null)
     if (nextStatus === status && nextPage === page) setAttempt((v) => v + 1)
-    else setParams({ status: nextStatus, page: String(nextPage) })
+    else { const next = new URLSearchParams(params); next.set('status', nextStatus); next.set('page', String(nextPage)); setParams(next) }
   }
   return <div className="meetings-page"><p className="breadcrumb"><Link to={`/clubs/${club.id}`}>{club.name}</Link> / Зустрічі</p>
     <PageHeading title={`Зустрічі: ${club.name}`} />

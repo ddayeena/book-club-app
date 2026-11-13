@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router'
+import { useLocation } from 'react-router'
+import Link from '../components/navigation/ClubLink.jsx'
+import useNavigate from '../hooks/useClubNavigate.js'
 import DiscussionScope from '../components/discussions/DiscussionScope.jsx'
 import DiscussionForm from '../components/discussions/DiscussionForm.jsx'
 import PageHeading from '../components/ui/PageHeading.jsx'

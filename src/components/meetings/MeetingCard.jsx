@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import Link from '../navigation/ClubLink.jsx'
 import { formatMeetingTime, meetingStatuses } from '../../domain/meetingValidation.js'
 import { clubFormatOptions, optionLabel } from '../../domain/options.js'
 export default function MeetingCard({ meeting }) {

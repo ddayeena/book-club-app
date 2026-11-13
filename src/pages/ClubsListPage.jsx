@@ -1,4 +1,5 @@
-import { Link, useLocation } from 'react-router'
+import { useLocation } from 'react-router'
+import Link from '../components/navigation/ClubLink.jsx'
 import PageHeading from '../components/ui/PageHeading.jsx'
 import ClubFilters from '../components/clubs/ClubFilters.jsx'
 import ClubList from '../components/clubs/ClubList.jsx'
@@ -11,7 +12,8 @@ export default function ClubsListPage() {
   const { clubs } = useClubs()
   const { user } = useAuth()
   const { selectedId, selectClub } = useClubSelection()
-  const filters = useClubFilters(clubs.filter((club) => !club.archivedAt))
+  const activeClubs = clubs.filter((club) => !club.archivedAt)
+  const filters = useClubFilters(activeClubs)
   const location = useLocation()
   const notice = location.state?.notice
   const requestSearch = selectedId
@@ -60,6 +62,12 @@ export default function ClubsListPage() {
             genre={filters.genre}
             sort={filters.sort}
             genres={filters.genres}
+            language={filters.language}
+            members={filters.members}
+            meetingOnly={filters.meetingOnly}
+            onLanguageChange={filters.setLanguage}
+            onMembersChange={filters.setMembers}
+            onMeetingOnlyChange={filters.setMeetingOnly}
             onQueryChange={filters.setQuery}
             onReadingOnlyChange={filters.setReadingOnly}
             onMineChange={filters.setMine}
@@ -79,8 +87,8 @@ export default function ClubsListPage() {
             selectedId={selectedId}
             onSelect={selectClub}
             currentUserId={user?.id ?? null}
-            emptyTitle={clubs.length === 0
-              ? 'Клубів ще не додано.'
+            emptyTitle={activeClubs.length === 0
+              ? 'Активних клубів поки немає.'
               : 'За цими фільтрами нічого не знайдено.'}
           />
           <p className="results-footer">

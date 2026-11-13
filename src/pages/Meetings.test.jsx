@@ -39,8 +39,8 @@ test.each(['/clubs/c/meetings', '/clubs/c/meetings/new', '/clubs/c/meetings/m', 
 test('direct list URL/F5 loads data and navigates to private details', async () => {
   mount()
   await userEvent.click(await screen.findByRole('link', { name: meeting.title }))
-  expect(await screen.findByRole('heading', { name: meeting.title })).toBeInTheDocument()
-  expect(screen.getByRole('link', { name: /Відкрити онлайн/ })).toHaveAttribute('href', meeting.meetingUrl)
+  expect(await screen.findByRole('heading', { name: meeting.title, level: 1 })).toBeInTheDocument()
+  expect(await screen.findByRole('link', { name: /Відкрити онлайн/ })).toHaveAttribute('href', meeting.meetingUrl)
   expect(screen.getByText('Лише для учасників')).toBeInTheDocument()
 })
 test('category, pagination, loading, error and retry are functional', async () => {
@@ -62,7 +62,7 @@ test('category, pagination, loading, error and retry are functional', async () =
 })
 test('create form validates, focuses an error and saves a browser-local time', async () => {
   mount('/clubs/c/meetings/new')
-  await userEvent.click(screen.getByRole('button', { name: 'Зберегти зустріч' }))
+  await userEvent.click(await screen.findByRole('button', { name: 'Зберегти зустріч' }))
   expect(screen.getByLabelText('Назва зустрічі')).toHaveFocus()
   expect(meetingService.save).not.toHaveBeenCalled()
   await userEvent.type(screen.getByLabelText('Назва зустрічі'), 'Обговорення роману')
@@ -142,7 +142,7 @@ test('club page shows legacy date separately without private URLs', () => {
   useClubs.mockReturnValue({ clubs: [{ ...club, nextMeeting: '2099-06-10', nextMeetingAt: meeting.startsAt, legacyNextMeeting: '2020-01-02' }], status: 'success', reload })
   mount('/clubs/c')
   expect(screen.getByText(/Дата зі старого розкладу — час не уточнено/)).toBeInTheDocument()
-  expect(screen.getByRole('link', { name: 'Усі зустрічі' })).toHaveAttribute('href', '/clubs/c/meetings')
+  expect(screen.getByRole('link', { name: 'Зустрічі' })).toHaveAttribute('href', '/clubs/c/meetings')
   expect(screen.queryByRole('link', { name: /Відкрити онлайн/ })).not.toBeInTheDocument()
 })
 

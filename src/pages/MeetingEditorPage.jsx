@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useParams } from 'react-router'
+import Link from '../components/navigation/ClubLink.jsx'
+import useNavigate from '../hooks/useClubNavigate.js'
 import useAuth from '../hooks/useAuth.js'
 import useClubs from '../hooks/useClubs.js'
 import PageHeading from '../components/ui/PageHeading.jsx'
